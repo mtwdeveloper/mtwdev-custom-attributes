@@ -1,0 +1,21 @@
+{
+  "name": "mtwdev-custom-attributes",
+  "version": "1.0.0",
+  "description": "Añade atributos HTML personalizados a cualquier bloque de Gutenberg de forma segura, ligera y extensible.",
+  "author": "GWKaplan / MTWdev",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/GWKaplan/wp-custom-attributes",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GWKaplan/wp-custom-attributes.git"
+  },
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "format": "wp-scripts format",
+    "lint:js": "wp-scripts lint-js"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "34.1.0"
+  }
+}

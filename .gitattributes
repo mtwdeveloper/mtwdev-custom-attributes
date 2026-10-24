@@ -1,0 +1,13 @@
+# Excluir carpetas de desarrollo y fuentes del ZIP final
+/src/ export-ignore
+/node_modules/ export-ignore
+/.git/ export-ignore
+/.github/ export-ignore
+
+# Excluir archivos de configuración de desarrollo del ZIP final
+/.gitignore export-ignore
+/.gitattributes export-ignore
+/package.json export-ignore
+/pnpm-lock.yaml export-ignore
+/pnpm-workspace.yaml export-ignore
+/CONTRIBUTING.md export-ignore

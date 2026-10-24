@@ -76,7 +76,7 @@ To ensure project stability and maintainability, all contributions must follow t
 
 If you find a bug:
 
-1. Check the [Issues](https://github.com/GWKaplan/wp-custom-attributes/issues) tab to see if it has already been reported.
+1. Check the [Issues](https://github.com/mtwdeveloper/wp-custom-attributes/issues) tab to see if it has already been reported.
 2. Open a new issue with a clear and concise title.
 3. Provide:
    * **Problem description:** What you expected to happen vs what actually happened.

@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name:       MTWDev Custom Block Attributes
- * Plugin URI:        https://github.com/GWKaplan/wp-custom-attributes
+ * Plugin URI:        https://github.com/mtwdeveloper/wp-custom-attributes
  * Description:       Añade fácilmente atributos HTML personalizados (data-*, aria-*, booleanos y pares clave-valor) a cualquier bloque de Gutenberg con validación de seguridad, presets rápidos y renderizado nativo.
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
- * Author:            GWKaplan / MTWdev
- * Author URI:        https://github.com/GWKaplan
+ * Author:            MTWdev
+ * Author URI:        https://github.com/mtwdeveloper
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       mtwdev-custom-attributes
@@ -301,7 +301,7 @@ if (\file_exists($mtwdev_puc_file)) {
 	require_once $mtwdev_puc_file;
 
 	$mtwdev_update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-		'https://github.com/GWKaplan/wp-custom-attributes',
+		'https://github.com/mtwdeveloper/wp-custom-attributes',
 		__FILE__,
 		'mtwdev-custom-attributes'
 	);

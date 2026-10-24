@@ -3,7 +3,7 @@
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![Updates](https://img.shields.io/badge/Updates-GitHub%20Direct-orange.svg)](https://github.com/GWKaplan/wp-custom-attributes)
+[![Updates](https://img.shields.io/badge/Updates-GitHub%20Direct-orange.svg)](https://github.com/mtwdeveloper/wp-custom-attributes)
 
 *Read this in other languages:* [English](README.md) | [Español](README.es.md)
 
@@ -43,7 +43,7 @@
 ## 📦 Installation
 
 ### Method 1: Direct Download (ZIP)
-1. Download the latest `.zip` from [Releases](https://github.com/GWKaplan/wp-custom-attributes/releases) or click the green **Code > Download ZIP** button.
+1. Download the latest `.zip` from [Releases](https://github.com/mtwdeveloper/wp-custom-attributes/releases) or click the green **Code > Download ZIP** button.
 2. In your WordPress admin dashboard, navigate to **Plugins > Add New > Upload Plugin**.
 3. Choose the downloaded ZIP file and click **Install Now**.
 4. Click **Activate Plugin**.
@@ -53,7 +53,7 @@
 1. Clone the repository into your WordPress plugins directory:
    ```bash
    cd wp-content/plugins/
-   git clone https://github.com/GWKaplan/wp-custom-attributes.git mtwdev-custom-attributes
+   git clone https://github.com/mtwdeveloper/wp-custom-attributes.git mtwdev-custom-attributes
    ```
 2. Install dependencies and build the editor assets:
    ```bash

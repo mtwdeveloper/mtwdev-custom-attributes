@@ -1,5 +1,5 @@
 === MTWDev Custom Block Attributes ===
-Contributors: GWKaplan, mtwdev
+Contributors: mtwdev
 Tags: gutenberg, attributes, html, data-attributes, accessibility, developer
 Requires at least: 6.0
 Tested up to: 6.8

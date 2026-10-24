@@ -76,7 +76,7 @@ Para mantener la integridad y calidad del proyecto, solicitamos cumplir con las 
 
 Si encuentras un error o comportamiento inesperado:
 
-1. Comprueba en la pestaña [Issues](https://github.com/GWKaplan/wp-custom-attributes/issues) que no haya sido reportado previamente.
+1. Comprueba en la pestaña [Issues](https://github.com/mtwdeveloper/wp-custom-attributes/issues) que no haya sido reportado previamente.
 2. Abre un nuevo issue utilizando un título claro y conciso.
 3. Incluye:
    * **Descripción del problema:** Qué esperabas que sucediera y qué sucedió en realidad.

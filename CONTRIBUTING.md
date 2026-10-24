@@ -1,100 +1,102 @@
-# Guía de Contribución a MTWDev Custom Block Attributes
+# Contributing to MTWDev Custom Block Attributes
 
-¡Gracias por tu interés en contribuir a **MTWDev Custom Block Attributes**! Este proyecto es de código abierto y agradecemos enormemente las sugerencias, reportes de errores y aportaciones de código de la comunidad.
+*Read this in other languages:* [English](CONTRIBUTING.md) | [Español](CONTRIBUTING.es.md)
 
-Para asegurar un desarrollo ordenado, consistente y de alta calidad, te pedimos que leas y sigas las siguientes directrices antes de colaborar.
+Thank you for your interest in contributing to **MTWDev Custom Block Attributes**! This project is open source and we warmly welcome community feedback, bug reports, and code contributions.
+
+To maintain a clean, consistent, and high-quality codebase, please review and follow these guidelines before contributing.
 
 ---
 
-## 🛠️ Entorno de Desarrollo y Flujo de Trabajo
+## 🛠️ Development Environment & Workflow
 
-### 1. Requisitos Previos
+### 1. Prerequisites
 
-* **Node.js:** v20.x o superior.
-* **pnpm:** Recomendado como gestor de paquetes (`npm install -g pnpm`).
-* **PHP:** 7.4 o superior (preferiblemente PHP 8.2+).
-* **WordPress:** Entorno local con WordPress 6.2+ y Laravel Herd, LocalWP u otro servidor local.
+* **Node.js:** v20.x or higher.
+* **pnpm:** Recommended package manager (`npm install -g pnpm`).
+* **PHP:** 7.4 or higher (PHP 8.2+ recommended).
+* **WordPress:** Local environment running WordPress 6.2+ (Laravel Herd, LocalWP, or similar).
 
-### 2. Flujo de Trabajo para Pull Requests
+### 2. Pull Request Workflow
 
-1. **Haz un Fork** del repositorio en tu cuenta de GitHub.
-2. **Clona tu fork** dentro de la carpeta `wp-content/plugins/` de tu instalación local de WordPress:
+1. **Fork** the repository to your own GitHub account.
+2. **Clone your fork** into your local WordPress `wp-content/plugins/` directory:
    ```bash
-   git clone https://github.com/TU-USUARIO/wp-custom-attributes.git mtwdev-custom-attributes
+   git clone https://github.com/YOUR-USERNAME/wp-custom-attributes.git mtwdev-custom-attributes
    cd mtwdev-custom-attributes
    ```
-3. **Crea una rama descriptiva** para tu aportación:
+3. **Create a descriptive branch** for your work:
    ```bash
-   git checkout -b feature/nombre-de-la-mejora
-   # o bien para un bugfix:
-   git checkout -b fix/descripcion-del-error
+   git checkout -b feature/your-feature-name
+   # or for bugfixes:
+   git checkout -b fix/issue-description
    ```
-4. **Instala las dependencias** con `pnpm`:
+4. **Install dependencies** using `pnpm`:
    ```bash
    pnpm install
    ```
-5. **Inicia el modo de desarrollo**:
+5. **Start development mode** (with hot reload/watch):
    ```bash
    pnpm run start
    ```
-6. **Realiza tus cambios** siguiendo los estándares de código (ver sección siguiente).
-7. **Compila la versión para producción**:
+6. **Make your changes** adhering to the coding standards below.
+7. **Build for production**:
    ```bash
    pnpm run build
    ```
-   > ⚠️ **Importante:** Asegúrate de ejecutar `pnpm run build` y comprobar que no hay errores de sintaxis antes de enviar el commit.
-8. **Envía tus cambios a tu fork y abre un Pull Request (PR)** hacia la rama `main` del repositorio original, explicando con claridad qué problema resuelve y cómo probarlo.
+   > ⚠️ **Important:** Always run `pnpm run build` and ensure there are no syntax or build errors before committing.
+8. **Push your changes** to your fork and submit a **Pull Request (PR)** to the `main` branch of the upstream repository, detailing what your PR changes and how to test it.
 
 ---
 
-## 📏 Estándares de Código y Directrices
+## 📏 Coding Standards & Guidelines
 
-Para mantener la integridad y calidad del proyecto, solicitamos cumplir con las siguientes pautas:
+To ensure project stability and maintainability, all contributions must follow these guidelines:
 
-### PHP y WordPress
-* Sigue los **WordPress Coding Standards (WPCS)**.
-* Aplica tipado estricto de parámetros y retornos cuando sea posible.
-* **Seguridad Absoluta:**
-  * Sanitiza siempre las entradas con funciones nativas (`sanitize_text_field`, `sanitize_key`, etc.).
-  * Valida los nombres de atributos antes de persistir o renderizar.
-  * Escapa siempre las salidas con `esc_attr()` o utiliza `WP_HTML_Tag_Processor`.
-  * Nunca permitas la inyección de manejadores de eventos JavaScript inline (`on*`) ni pseudo-protocolos `javascript:`.
-* **Rendimiento:**
-  * No inyectes scripts ni estilos en el frontend salvo que sea estrictamente indispensable. La inyección en el DOM debe resolverse en tiempo de renderizado con $O(1)$.
+### PHP & WordPress
+* Follow the official **WordPress Coding Standards (WPCS)**.
+* Use strict typing for function parameters and return types where applicable.
+* **Security First:**
+  * Always sanitize input using native WordPress functions (`sanitize_text_field`, `sanitize_key`, etc.).
+  * Validate attribute names before persisting or rendering.
+  * Always escape output with `esc_attr()` or rely on `WP_HTML_Tag_Processor`.
+  * Never allow inline JavaScript event handlers (`on*`) or `javascript:` pseudo-protocols.
+* **Performance:**
+  * Do not enqueue frontend assets unless strictly necessary. DOM injection must run at render time with $O(1)$ efficiency.
 
-### JavaScript y Gutenberg
-* Utiliza sintaxis estándar moderna de **React / JSX**.
-* Emplea siempre los paquetes oficiales de WordPress (`@wordpress/block-editor`, `@wordpress/components`, `@wordpress/compose`, `@wordpress/element`, `@wordpress/hooks`, `@wordpress/i18n`).
-* **Prohibido** usar `wp.element.createElement` manual en el código fuente de `src/`.
-* Aplica internacionalización en todos los textos de la interfaz mediante `__('...', 'mtwdev-custom-attributes')`.
-
----
-
-## 🐛 Reportar Errores (Bugs)
-
-Si encuentras un error o comportamiento inesperado:
-
-1. Comprueba en la pestaña [Issues](https://github.com/GWKaplan/wp-custom-attributes/issues) que no haya sido reportado previamente.
-2. Abre un nuevo issue utilizando un título claro y conciso.
-3. Incluye:
-   * **Descripción del problema:** Qué esperabas que sucediera y qué sucedió en realidad.
-   * **Pasos detallados para reproducirlo.**
-   * **Entorno técnico:** Versión de WordPress, versión de PHP, navegador y tema activo.
-   * **Capturas de pantalla o logs de consola** si procede.
+### JavaScript & Gutenberg
+* Write modern standard **React / JSX**.
+* Use official WordPress packages (`@wordpress/block-editor`, `@wordpress/components`, `@wordpress/compose`, `@wordpress/element`, `@wordpress/hooks`, `@wordpress/i18n`).
+* **Do not** manually call `wp.element.createElement` in source files under `src/`.
+* Wrap all UI strings in internationalization functions: `__('...', 'mtwdev-custom-attributes')`.
 
 ---
 
-## 💡 Sugerir Nuevas Funcionalidades
+## 🐛 Reporting Bugs
 
-Si tienes una idea para mejorar el plugin:
-* Te sugerimos abrir primero una discusión o un Issue describiendo el caso de uso antes de invertir horas escribiendo código en un PR.
-* Esto nos permite alinearnos en la arquitectura y asegurarnos de que la propuesta encaja con los principios de ligereza y seguridad del plugin.
+If you find a bug:
+
+1. Check the [Issues](https://github.com/GWKaplan/wp-custom-attributes/issues) tab to see if it has already been reported.
+2. Open a new issue with a clear and concise title.
+3. Provide:
+   * **Problem description:** What you expected to happen vs what actually happened.
+   * **Steps to reproduce the issue.**
+   * **Environment details:** WordPress version, PHP version, active theme, and browser.
+   * **Screenshots or console errors** if relevant.
 
 ---
 
-## 🤝 Código de Conducta
+## 💡 Suggesting Enhancements
 
-Esperamos que todas las interacciones en este proyecto sean:
-* **Respetuosas y profesionales:** Trata a todos los participantes con cortesía y empatía.
-* **Constructivas:** Céntrate en ofrecer retroalimentación útil y fundamentada técnicamente.
-* **Inclusivas:** Da la bienvenida a colaboradores de todos los niveles de experiencia.
+If you have an idea to improve the plugin:
+* Open an issue or discussion first to share your proposal before investing time writing code.
+* This ensures that the idea aligns with the plugin's goals of lightweight architecture and strict security.
+
+---
+
+## 🤝 Code of Conduct
+
+We expect all contributors to adhere to standard community conduct:
+* **Respectful & Professional:** Treat everyone with courtesy and empathy.
+* **Constructive:** Focus on helpful, technically sound feedback.
+* **Inclusive:** Welcome contributors of all background and experience levels.

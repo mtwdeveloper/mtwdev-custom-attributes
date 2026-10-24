@@ -8,46 +8,48 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Añade fácilmente atributos HTML personalizados (data-*, aria-*, booleanos y pares clave-valor) a cualquier bloque de Gutenberg.
+Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block.
 
 == Description ==
 
-**MTWDev Custom Block Attributes** es una extensión para el editor de bloques (Gutenberg) de WordPress que permite a desarrolladores y editores inyectar atributos HTML estándar y personalizados en cualquier bloque existente.
+**MTWDev Custom Block Attributes** is an extension for the WordPress Block Editor (Gutenberg) that allows site editors and developers to inject standard and custom HTML attributes into any existing block.
 
-Ya sea que necesites añadir atributos para analítica y seguimiento (`data-track-event="click"`), mejorar la accesibilidad (`aria-label`, `role`), o utilizar atributos modernos de HTML5 (`download`, `inert`), este plugin proporciona una interfaz intuitiva dentro del panel Avanzado nativo del bloque.
+Whether you need to add custom attributes for analytics tracking (`data-track-event="click"`), improve accessibility (`aria-label`, `role`), or use modern HTML5 boolean attributes (`download`, `inert`), this plugin provides an intuitive, lightweight interface within the native block Advanced sidebar panel.
 
-### Características
+### Features
 
-* **Integración en panel Avanzado:** Sin paneles flotantes ni interfaces dispersas.
-* **Presets rápidos:** Añade con un solo clic `data-*`, `aria-label`, `title`, `download`, `role`, `tabindex` o `inert`.
-* **Soporte booleano:** Renderizado de atributos que no requieren valor (`download`, `inert`).
-* **Seguridad activa:** Bloqueo preventivo de eventos JavaScript (`onclick`, `on*`) y validación estricta de nombres y valores.
-* **Cero sobrecarga frontend:** Sin JavaScript ni CSS en el frontend; inyección limpia y ligera en tiempo de renderizado.
+* **Advanced Panel Integration:** Seamlessly integrated into the block settings sidebar without intrusive floating panels.
+* **Quick Presets Bar:** One-click shortcuts for `data-*`, `aria-label`, `title`, `download`, `role`, `tabindex`, and `inert`.
+* **Clean Boolean Support:** True boolean attributes rendered without values (`download`, `inert`, `novalidate`).
+* **Active Security:** Automatic blocking of inline JavaScript event handlers (`onclick`, `on*`) and strict validation of names and values.
+* **Zero Frontend Bloat:** No frontend CSS or JavaScript enqueued; clean, high-performance injection at render time via `WP_HTML_Tag_Processor`.
+* **Zero Block Invalidation:** Attributes are stored in block metadata and injected at render time. Deactivating the plugin will never break or invalidate your blocks.
 
 == Installation ==
 
-1. Sube la carpeta `mtwdev-custom-attributes` al directorio `/wp-content/plugins/` de tu instalación.
-2. Activa el plugin a través del menú **Plugins** en WordPress.
-3. Edita cualquier entrada o página en el Editor de Bloques y despliega la pestaña **Avanzado** del bloque seleccionado para ver la sección de atributos.
+1. Upload the `mtwdev-custom-attributes` folder to your `/wp-content/plugins/` directory.
+2. Activate the plugin via the **Plugins** menu in WordPress.
+3. Edit any post or page in the Block Editor, select a block, and expand the **Advanced** panel in the right sidebar to access the attributes settings.
 
 == Frequently Asked Questions ==
 
-= ¿Afecta a la velocidad de carga de mi web en el frontend? =
-No. El plugin no carga ningún archivo CSS ni JS adicional en el frontend. La inyección de atributos se ejecuta de manera nativa mediante el hook `render_block` de WordPress en menos de 0.1 ms.
+= Does this plugin affect frontend page load speed? =
+No. The plugin enqueues zero additional CSS or JS files on the frontend. Attribute injection is handled dynamically via WordPress core's native `WP_HTML_Tag_Processor` during the `render_block` filter in less than 0.1 ms.
 
-= ¿Puedo usarlo para añadir onclick o eventos JavaScript? =
-No. Por motivos de seguridad y para cumplir con las directrices oficiales de WordPress y prevención XSS, los manejadores de eventos inline que empiezan por `on` están estrictamente deshabilitados.
+= Can I use this to add onclick or JavaScript event attributes? =
+No. For security reasons and to comply with WordPress.org guidelines and XSS prevention, inline event handlers starting with `on` are strictly prohibited.
 
-= ¿Funciona con bloques personalizados de terceros? =
-Sí. El plugin se aplica a todos los bloques registrados en WordPress que soporten el filtro de atributos de Gutenberg.
+= Does it work with third-party blocks? =
+Yes. The plugin applies to all registered WordPress blocks that support block attributes.
 
 == Changelog ==
 
 = 1.0.0 =
-* Versión inicial.
-* Inyección optimizada con WP_HTML_Tag_Processor nativo de WordPress core.
-* Panel integrado en la sección Avanzado de Gutenberg.
-* Barra de presets rápidos y soporte para atributos booleanos.
-* Exclusión de bloques no soportados (core/html, core/shortcode, core/freeform).
-* Validación estricta de seguridad, control de unfiltered_html y prevención XSS.
-* Hooks PHP mtwdev_custom_attributes_disallowed y mtwdev_custom_attributes_unsupported_blocks.
+* Initial release.
+* Optimized injection using native WordPress core `WP_HTML_Tag_Processor`.
+* Seamless integration in the Gutenberg Advanced panel.
+* Quick presets bar and full boolean attribute support.
+* Unsupported blocks exclusion (`core/html`, `core/shortcode`, `core/freeform`).
+* Strict security validation, capability checks (`unfiltered_html`), and XSS prevention.
+* Extensible PHP hooks: `mtwdev_custom_attributes_disallowed` and `mtwdev_custom_attributes_unsupported_blocks`.
+* GitHub automatic updates via Plugin Update Checker (PUC v5.7).

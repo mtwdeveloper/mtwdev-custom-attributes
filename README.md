@@ -5,146 +5,135 @@
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![Updates](https://img.shields.io/badge/Updates-GitHub%20Direct-orange.svg)](https://github.com/GWKaplan/wp-custom-attributes)
 
-**MTWDev Custom Block Attributes** es un plugin ligero, seguro y extensible para WordPress que permite añadir atributos HTML personalizados (`data-*`, `aria-*`, `title`, booleanos como `download` o `inert`, y cualquier atributo clave-valor) a **cualquier bloque de Gutenberg** directamente desde el editor visual.
+*Read this in other languages:* [English](README.md) | [Español](README.es.md)
+
+**MTWDev Custom Block Attributes** is a lightweight, secure, and developer-friendly WordPress plugin that lets site editors and developers inject custom HTML attributes (`data-*`, `aria-*`, `title`, boolean attributes like `download` or `inert`, and custom key-value pairs) into **any Gutenberg block** directly from the block editor.
 
 ---
 
-## 🚀 Características Principales
+## 🚀 Key Features
 
-- **Integración Nativa en Gutenberg:** Se ubica de forma limpia y discreta dentro del panel **Avanzado** oficial de la barra lateral del editor.
-- **Soporte para Atributos Booleanos y Clave-Valor:**
-  - Atributos estándar: `data-user-id="105"`, `aria-label="Cerrar modal"`, `title="Información"`.
-  - Atributos simples / booleanos (sin valor asignado): `download`, `inert`, `novalidate`, `required`.
-- **Presets de Inserción Rápida:** Acceso inmediato con un clic a los atributos más utilizados (`data-*`, `aria-label`, `title`, `download`, `role`, `tabindex`, `inert`).
-- **Seguridad Robusta:**
-  - Validación estricta de nombres según el estándar HTML5.
-  - Bloqueo preventivo de inyección de código y eventos inline (`onclick`, `onload`, `on*`).
-  - Mitigación de riesgos XSS con sanitización y escapado riguroso en backend (`esc_attr`).
-- **Rendimiento Excepcional (Zero Frontend Bloat):**
-  - No carga scripts ni hojas de estilo adicionales en el frontend.
-  - Inyección en tiempo de renderizado con impacto despreciable en memoria y tiempo de respuesta ($O(1)$).
-- **Arquitectura Oficial con WP_HTML_Tag_Processor:** Utiliza la API nativa de parsing de WordPress core (WP 6.2+) para una inyección de atributos infalible que no rompe la validación de bloques al desactivar el plugin.
-- **Actualizaciones Automáticas desde GitHub:** Incorpora la librería _Plugin Update Checker_ (PUC) para recibir actualizaciones directamente en el panel de WordPress ante cada nueva versión publicada en GitHub.
-- **Control de Capacidades (`unfiltered_html`):** Protección nativa en instalaciones multi-autor y Multisite.
-- **Extensible para Desarrolladores:** Filtros PHP para personalizar la lista negra de atributos y los bloques no soportados (`mtwdev_custom_attributes_disallowed` y `mtwdev_custom_attributes_unsupported_blocks`).
-
----
-
-## 📋 Requisitos
-
-- **WordPress:** 6.0 o superior.
-- **PHP:** 7.4 o superior (compatible con PHP 8.0, 8.1, 8.2 y 8.3).
-- **Editor de bloques (Gutenberg):** Activo.
+- **Native Block Editor Integration:** Neatly embedded within the official **Advanced** panel in the block settings sidebar.
+- **Boolean & Key-Value Support:**
+  - Key-value attributes: `data-user-id="105"`, `aria-label="Close modal"`, `title="Information"`.
+  - Clean boolean/valueless attributes: `download`, `inert`, `novalidate`, `required`.
+- **Quick Presets Bar:** One-click shortcuts for commonly used attributes (`data-*`, `aria-label`, `title`, `download`, `role`, `tabindex`, `inert`).
+- **Robust Security & XSS Mitigation:**
+  - Strict HTML5 attribute name validation (`/^[a-z0-9_\-:]+$/`).
+  - Automatic blocking of inline DOM events (`onclick`, `onload`, `on*`) and executable attributes (`srcdoc`, `formaction`).
+  - Safe output escaping using `esc_attr()` and stripping of `javascript:` pseudo-protocols.
+- **Zero Frontend Overhead ($O(1)$):**
+  - Zero additional CSS or JS files enqueued on the frontend.
+  - Ultra-fast injection at runtime using the native WordPress 6.2+ `WP_HTML_Tag_Processor` API.
+- **Zero Block Invalidation:** Attributes are stored in block metadata and injected dynamically at render time (`render_block`). If the plugin is ever deactivated, your blocks will **never** throw Gutenberg invalidation errors (*"This block contains unexpected or invalid content"*).
+- **Automatic GitHub Updates:** Integrated *Plugin Update Checker* (PUC v5.7) for automatic updates directly from GitHub releases or the `main` branch.
+- **Capability Control (`unfiltered_html`):** Native permission checks for multi-author environments and WordPress Multisite.
+- **Developer Friendly & Extensible:** PHP filters to customize disallowed attributes (`mtwdev_custom_attributes_disallowed`) and unsupported blocks (`mtwdev_custom_attributes_unsupported_blocks`).
 
 ---
 
-## 📦 Instalación
+## 📋 Requirements
 
-### Método 1: Descarga Directa (Usuarios finales)
+- **WordPress:** 6.0 or higher (6.2+ recommended for native `WP_HTML_Tag_Processor`).
+- **PHP:** 7.4 or higher (fully compatible with PHP 8.0, 8.1, 8.2, and 8.3).
+- **Gutenberg Block Editor:** Enabled.
 
-1. Descarga el archivo ZIP de la última versión desde [Releases](https://github.com/GWKaplan/wp-custom-attributes/releases) o haz clic en el botón verde **Code > Download ZIP**.
-2. En tu panel de administración de WordPress, dirígete a **Plugins > Añadir nuevo > Subir plugin**.
-3. Selecciona el archivo ZIP descargado y haz clic en **Instalar ahora**.
-4. Activa el plugin.
-5. ¡Listo! Recibirás notificaciones de actualización automáticamente en tu panel de WordPress cuando haya nuevas versiones.
+---
 
-### Método 2: Clonado con Git (Para Desarrolladores)
+## 📦 Installation
 
-1. Clona el repositorio dentro de tu directorio de plugins de WordPress:
+### Method 1: Direct Download (ZIP)
+1. Download the latest `.zip` from [Releases](https://github.com/GWKaplan/wp-custom-attributes/releases) or click the green **Code > Download ZIP** button.
+2. In your WordPress admin dashboard, navigate to **Plugins > Add New > Upload Plugin**.
+3. Choose the downloaded ZIP file and click **Install Now**.
+4. Click **Activate Plugin**.
+5. You're set! Future updates will appear automatically in your WordPress dashboard.
+
+### Method 2: Git Clone (Developers)
+1. Clone the repository into your WordPress plugins directory:
    ```bash
    cd wp-content/plugins/
    git clone https://github.com/GWKaplan/wp-custom-attributes.git mtwdev-custom-attributes
    ```
-2. Instala las dependencias y compila los assets del editor:
+2. Install dependencies and build the editor assets:
    ```bash
    cd mtwdev-custom-attributes
    pnpm install
    pnpm run build
    ```
-3. Activa **MTWDev Custom Block Attributes** desde **Plugins > Plugins Instalados** (o con `wp plugin activate mtwdev-custom-attributes`).
+3. Activate **MTWDev Custom Block Attributes** in **Plugins > Installed Plugins** (or run `wp plugin activate mtwdev-custom-attributes`).
 
 ---
 
-## 🛠️ Cómo Utilizarlo
+## 🛠️ How to Use
 
-1. Abre cualquier entrada, página o plantilla en el **Editor de Bloques (Gutenberg)**.
-2. Haz clic sobre cualquier bloque que desees personalizar (botón, grupo, imagen, párrafo, titular, etc.).
-3. En la barra lateral derecha de ajustes del bloque, despliega la pestaña **Avanzado**.
-4. Verás la sección **Atributos HTML Personalizados**:
-   - Pulsa sobre cualquiera de los **Presets rápidos** (ej. `+data-*` o `+download`) o escribe manualmente el nombre del atributo.
-   - Si se trata de un atributo booleano sin valor (como `download` o `inert`), marca la casilla **Atributo simple / booleano**.
-   - Haz clic en **Añadir**.
-   - Si no es booleano, introduce el valor deseado en el campo de texto correspondiente.
-5. Guarda o publica tu contenido. El atributo se inyectará de forma limpia en la etiqueta raíz del bloque en el frontend.
-
----
-
-## 🛡️ Seguridad y Buenas Prácticas
-
-El plugin sigue escrupulosamente los estándares de código de WordPress (WPCS):
-
-1. **Lista Negra de Atributos:**  
-   Se deniegan automáticamente todos los atributos que comiencen por `on` (como `onclick`, `onerror`, `onload`) y atributos con riesgo de ejecución de código externo (como `srcdoc` o `formaction`).
-2. **Sanitización y Escapado:**  
-   Las claves se validan con regex `^[a-z0-9_\-:]+$` y los valores se filtran con `esc_attr()`, neutralizando intentos de salto de etiquetas o inyección HTML.
-3. **Bloqueo de Pseudo-Protocolos:**  
-   Se invalidan valores que contengan `javascript:`.
-4. **Respeto a Capacidades Nativas:**  
-   Si el usuario que edita no tiene la capability `unfiltered_html`, la interfaz deshabilita la edición y el filtro `pre_kses` sanea el contenido al guardar.
+1. Open any post, page, or template in the **Block Editor (Gutenberg)**.
+2. Select any block you wish to customize (Button, Group, Image, Paragraph, Heading, etc.).
+3. In the right-hand sidebar, expand the **Advanced** panel.
+4. Under **Custom HTML Attributes**:
+   - Click any **Quick Preset** button (e.g., `+data-*` or `+download`) or type the attribute name manually.
+   - If it is a valueless boolean attribute (such as `download` or `inert`), toggle **Simple / boolean attribute**.
+   - Click **Add**.
+   - If it is not boolean, enter the desired value in the input field.
+5. Save or publish your content. The attribute will be rendered cleanly on the root tag of the block in the frontend.
 
 ---
 
-## 🔌 API y Extensibilidad
+## 🛡️ Security & Best Practices
 
-### Modificar o ampliar la lista de atributos restringidos
+This plugin adheres strictly to the WordPress Coding Standards (WPCS):
 
+1. **Attribute Blacklist:** Denies all event handlers starting with `on` (`onclick`, `onerror`, `onload`, etc.) and code execution vectors (`srcdoc`, `formaction`).
+2. **Sanitization & Escaping:** Attribute keys are strictly sanitized and values are escaped with `esc_attr()`.
+3. **Protocol Sanitization:** Automatically blocks values containing `javascript:`.
+4. **Capability Checks:** Users lacking `unfiltered_html` capabilities cannot add or edit attributes, and content is safely sanitized via the `pre_kses` filter.
+
+---
+
+## 🔌 Developer API & Filters
+
+### Customizing the Disallowed Attributes List
 ```php
 add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): array {
-    // Bloquear atributos adicionales según la política de tu proyecto
-    $disallowed[] = 'custom-dangerous-attr';
+    // Add custom restricted attributes according to your project policy
+    $disallowed[] = 'custom-restricted-attr';
     return $disallowed;
 });
 ```
 
-### Excluir bloques adicionales
-
+### Customizing Unsupported Blocks
 ```php
 add_filter('mtwdev_custom_attributes_unsupported_blocks', function (array $blocks): array {
-    $blocks[] = 'mi-namespace/bloque-especial';
+    $blocks[] = 'my-namespace/custom-block';
     return $blocks;
 });
 ```
 
 ---
 
-## 💻 Desarrollo y Compilación
+## 💻 Development & Build Scripts
 
-Este plugin utiliza `@wordpress/scripts` para la compilación de JavaScript moderno (React/JSX) y SCSS:
+Built with `@wordpress/scripts` for modern React/JSX and SCSS compilation:
 
 ```bash
-# Instalar dependencias con pnpm
+# Install dependencies
 pnpm install
 
-# Modo desarrollo con recarga automática en cambios (watch)
+# Watch mode for active development
 pnpm run start
 
-# Compilación optimizada para producción
+# Production build
 pnpm run build
 ```
 
 ---
 
-## 🤝 Cómo Contribuir
+## 🤝 Contributing
 
-¡Las contribuciones, sugerencias y mejoras son muy bienvenidas! Si deseas reportar un error o proponer una nueva funcionalidad, consulta nuestra [Guía de Contribución](CONTRIBUTING.md).
-
-1. Haz un **Fork** de este repositorio.
-2. Crea una rama para tu mejora (`git checkout -b feature/nueva-mejora`).
-3. Realiza tus cambios asegurándote de compilar con `pnpm run build`.
-4. Envía un **Pull Request** explicando detalladamente el cambio.
+Contributions, issues, and feature requests are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) before submitting a Pull Request.
 
 ---
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto está bajo la licencia **GPL-2.0-or-later**. Consulta el archivo `LICENSE` o visita [GNU General Public License](https://www.gnu.org/licenses/gpl-2.0.html) para más detalles.
+This project is licensed under the **GPL-2.0-or-later** license. See [LICENSE](LICENSE) or visit [GNU General Public License](https://www.gnu.org/licenses/gpl-2.0.html) for details.

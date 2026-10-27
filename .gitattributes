@@ -1,8 +1,20 @@
-# Excluir carpetas de desarrollo y fuentes del ZIP final
+# Normalización de saltos de línea
+* text=auto eol=lf
+*.bat text eol=crlf
+*.mo binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Excluir carpetas de desarrollo, tests y fuentes del ZIP de distribución / exportación
 /src/ export-ignore
+/tests/ export-ignore
 /node_modules/ export-ignore
 /.git/ export-ignore
 /.github/ export-ignore
+/.vscode/ export-ignore
 
 # Excluir archivos de configuración de desarrollo del ZIP final
 /.gitignore export-ignore

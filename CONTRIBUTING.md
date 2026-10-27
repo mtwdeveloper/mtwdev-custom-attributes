@@ -22,7 +22,7 @@ To maintain a clean, consistent, and high-quality codebase, please review and fo
 1. **Fork** the repository to your own GitHub account.
 2. **Clone your fork** into your local WordPress `wp-content/plugins/` directory:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/wp-custom-attributes.git mtwdev-custom-attributes
+   git clone https://github.com/YOUR-USERNAME/mtwdev-custom-attributes.git mtwdev-custom-attributes
    cd mtwdev-custom-attributes
    ```
 3. **Create a descriptive branch** for your work:
@@ -76,7 +76,7 @@ To ensure project stability and maintainability, all contributions must follow t
 
 If you find a bug:
 
-1. Check the [Issues](https://github.com/mtwdeveloper/wp-custom-attributes/issues) tab to see if it has already been reported.
+1. Check the [Issues](https://github.com/mtwdeveloper/mtwdev-custom-attributes/issues) tab to see if it has already been reported.
 2. Open a new issue with a clear and concise title.
 3. Provide:
    * **Problem description:** What you expected to happen vs what actually happened.

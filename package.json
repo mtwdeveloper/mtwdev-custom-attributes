@@ -1,19 +1,24 @@
 {
   "name": "mtwdev-custom-attributes",
   "version": "1.0.0",
-  "description": "Añade atributos HTML personalizados a cualquier bloque de Gutenberg de forma segura, ligera y extensible.",
-  "author": "GWKaplan / MTWdev",
+  "description": "Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block safely, lightly, and extensibly.",
+  "author": "MTWdev",
   "license": "GPL-2.0-or-later",
-  "homepage": "https://github.com/GWKaplan/wp-custom-attributes",
+  "homepage": "https://github.com/mtwdeveloper/mtwdev-custom-attributes",
   "repository": {
     "type": "git",
-    "url": "https://github.com/GWKaplan/wp-custom-attributes.git"
+    "url": "https://github.com/mtwdeveloper/mtwdev-custom-attributes.git"
   },
   "scripts": {
     "build": "wp-scripts build",
     "start": "wp-scripts start",
     "format": "wp-scripts format",
-    "lint:js": "wp-scripts lint-js"
+    "lint:js": "wp-scripts lint-js",
+    "test:js": "wp-scripts test-unit-js",
+    "test:php": "php tests/run-tests.php",
+    "test": "pnpm run test:js && pnpm run test:php",
+    "i18n:pot": "wp i18n make-pot . languages/mtwdev-custom-attributes.pot --domain=mtwdev-custom-attributes",
+    "i18n:build": "wp i18n make-mo languages/ languages/ && wp i18n make-json languages/ languages/ --no-purge"
   },
   "devDependencies": {
     "@wordpress/scripts": "34.1.0"

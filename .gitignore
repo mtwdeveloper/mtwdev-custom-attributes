@@ -20,9 +20,11 @@ Desktop.ini
 *.sublime-project
 *.sublime-workspace
 
-# Cachés de linters y tests
+# Cachés y resultados de linters y tests
 .eslintcache
 .phpunit.result.cache
+coverage/
+.nyc_output/
 
 # Paquetes y archivos temporales
 *.zip

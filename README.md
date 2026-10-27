@@ -3,7 +3,8 @@
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![Updates](https://img.shields.io/badge/Updates-GitHub%20Direct-orange.svg)](https://github.com/mtwdeveloper/wp-custom-attributes)
+[![Tests](https://img.shields.io/badge/Tests-Passing%20(62%2F62)-brightgreen.svg)](#-automated-testing)
+[![WordPress.org](https://img.shields.io/badge/WordPress.org-Plugin%20Ready-blue.svg)](https://wordpress.org/)
 
 *Read this in other languages:* [English](README.md) | [Español](README.es.md)
 
@@ -18,17 +19,18 @@
   - Key-value attributes: `data-user-id="105"`, `aria-label="Close modal"`, `title="Information"`.
   - Clean boolean/valueless attributes: `download`, `inert`, `novalidate`, `required`.
 - **Quick Presets Bar:** One-click shortcuts for commonly used attributes (`data-*`, `aria-label`, `title`, `download`, `role`, `tabindex`, `inert`).
-- **Robust Security & XSS Mitigation:**
+- **Multi-Layer Security Hardening & XSS Mitigation:**
   - Strict HTML5 attribute name validation (`/^[a-z0-9_\-:]+$/`).
-  - Automatic blocking of inline DOM events (`onclick`, `onload`, `on*`) and executable attributes (`srcdoc`, `formaction`).
-  - Safe output escaping using `esc_attr()` and stripping of `javascript:` pseudo-protocols.
+  - Automatic blocking of inline DOM events (`onclick`, `onload`, `on*`) and executable attributes (`srcdoc`, `formaction`, `action`, `xmlns`).
+  - Native protection against dangerous pseudo-protocols (`javascript:`, `vbscript:`, `data:text/html`) including whitespace evasion.
+  - Reserved attributes protection: prevents overriding `class`, `id`, and `style`.
 - **Zero Frontend Overhead ($O(1)$):**
   - Zero additional CSS or JS files enqueued on the frontend.
-  - Ultra-fast injection at runtime using the native WordPress 6.2+ `WP_HTML_Tag_Processor` API.
-- **Zero Block Invalidation:** Attributes are stored in block metadata and injected dynamically at render time (`render_block`). If the plugin is ever deactivated, your blocks will **never** throw Gutenberg invalidation errors (*"This block contains unexpected or invalid content"*).
-- **Automatic GitHub Updates:** Integrated *Plugin Update Checker* (PUC v5.7) for automatic updates directly from GitHub releases or the `main` branch.
-- **Capability Control (`unfiltered_html`):** Native permission checks for multi-author environments and WordPress Multisite.
-- **Developer Friendly & Extensible:** PHP filters to customize disallowed attributes (`mtwdev_custom_attributes_disallowed`) and unsupported blocks (`mtwdev_custom_attributes_unsupported_blocks`).
+  - Ultra-fast injection at runtime using native WordPress `WP_HTML_Tag_Processor` with early bailouts.
+- **Zero Block Invalidation:** Attributes are stored in block metadata and injected dynamically at render time (`render_block`). If the plugin is deactivated, blocks will never throw Gutenberg invalidation errors (*"This block contains unexpected or invalid content"*).
+- **100% Internationalized (i18n):** Default English source strings with bundled complete Spanish (`es_ES`) translation (PO, MO, and Gutenberg JSON script translations).
+- **Automated Testing Suite:** 100% test coverage for sanitization, rendering, security protocols, and editor validation.
+- **Developer Friendly & Extensible:** PHP filters for capability customization (`mtwdev_custom_attributes_capability`), disallowed attributes (`mtwdev_custom_attributes_disallowed`), and unsupported blocks (`mtwdev_custom_attributes_unsupported_blocks`).
 
 ---
 
@@ -43,17 +45,16 @@
 ## 📦 Installation
 
 ### Method 1: Direct Download (ZIP)
-1. Download the latest `.zip` from [Releases](https://github.com/mtwdeveloper/wp-custom-attributes/releases) or click the green **Code > Download ZIP** button.
+1. Download the latest `.zip` from [Releases](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases) or click **Code > Download ZIP**.
 2. In your WordPress admin dashboard, navigate to **Plugins > Add New > Upload Plugin**.
 3. Choose the downloaded ZIP file and click **Install Now**.
 4. Click **Activate Plugin**.
-5. You're set! Future updates will appear automatically in your WordPress dashboard.
 
 ### Method 2: Git Clone (Developers)
 1. Clone the repository into your WordPress plugins directory:
    ```bash
    cd wp-content/plugins/
-   git clone https://github.com/mtwdeveloper/wp-custom-attributes.git mtwdev-custom-attributes
+   git clone https://github.com/mtwdeveloper/mtwdev-custom-attributes.git mtwdev-custom-attributes
    ```
 2. Install dependencies and build the editor assets:
    ```bash
@@ -65,6 +66,39 @@
 
 ---
 
+## 🧪 Automated Testing
+
+The plugin includes automated tests for both JavaScript and PHP:
+
+```bash
+# Run all tests (JS + PHP)
+pnpm test
+
+# Run JavaScript unit tests (Jest via @wordpress/scripts)
+pnpm run test:js
+
+# Run PHP unit and integration tests
+pnpm run test:php
+```
+
+All 62 tests (9 JS tests + 53 PHP tests) run isolated and test sanitization, validation, security vectors, and HTML rendering.
+
+---
+
+## 🌍 Internationalization (i18n)
+
+Generate translation templates and compiled files:
+
+```bash
+# Generate POT translation template
+pnpm run i18n:pot
+
+# Compile PO/MO and Gutenberg script JSON translations
+pnpm run i18n:build
+```
+
+---
+
 ## 🛠️ How to Use
 
 1. Open any post, page, or template in the **Block Editor (Gutenberg)**.
@@ -72,30 +106,35 @@
 3. In the right-hand sidebar, expand the **Advanced** panel.
 4. Under **Custom HTML Attributes**:
    - Click any **Quick Preset** button (e.g., `+data-*` or `+download`) or type the attribute name manually.
-   - If it is a valueless boolean attribute (such as `download` or `inert`), toggle **Simple / boolean attribute**.
+   - If it is a valueless boolean attribute (such as `download` or `inert`), toggle **Boolean / empty attribute**.
    - Click **Add**.
    - If it is not boolean, enter the desired value in the input field.
-5. Save or publish your content. The attribute will be rendered cleanly on the root tag of the block in the frontend.
+5. Save or publish your content.
 
 ---
 
 ## 🛡️ Security & Best Practices
 
-This plugin adheres strictly to the WordPress Coding Standards (WPCS):
-
-1. **Attribute Blacklist:** Denies all event handlers starting with `on` (`onclick`, `onerror`, `onload`, etc.) and code execution vectors (`srcdoc`, `formaction`).
-2. **Sanitization & Escaping:** Attribute keys are strictly sanitized and values are escaped with `esc_attr()`.
-3. **Protocol Sanitization:** Automatically blocks values containing `javascript:`.
-4. **Capability Checks:** Users lacking `unfiltered_html` capabilities cannot add or edit attributes, and content is safely sanitized via the `pre_kses` filter.
+1. **Attribute Blacklist:** Denies all event handlers starting with `on*` (`onclick`, `onerror`, `onload`, etc.) and code execution vectors (`srcdoc`, `formaction`, `xmlns`).
+2. **Sanitization & Escaping:** Attribute keys are strictly sanitized (`/^[a-z0-9_\-:]+$/`) and values are escaped with `esc_attr()` or processed via `WP_HTML_Tag_Processor`.
+3. **Protocol Sanitization:** Deep inspection rejecting `javascript:`, `vbscript:`, and `data:text/html` even with whitespace or newline evasion.
+4. **Capability Checks:** Users lacking the required capability (default: `unfiltered_html`) cannot add or edit attributes, and content is safely sanitized via the `pre_kses` filter.
 
 ---
 
 ## 🔌 Developer API & Filters
 
-### Customizing the Disallowed Attributes List
+### Customizing the Required Capability
+```php
+add_filter('mtwdev_custom_attributes_capability', function (string $cap): string {
+    // Allow any user who can edit posts
+    return 'edit_posts';
+});
+```
+
+### Customizing Disallowed Attributes
 ```php
 add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): array {
-    // Add custom restricted attributes according to your project policy
     $disallowed[] = 'custom-restricted-attr';
     return $disallowed;
 });
@@ -104,36 +143,13 @@ add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): 
 ### Customizing Unsupported Blocks
 ```php
 add_filter('mtwdev_custom_attributes_unsupported_blocks', function (array $blocks): array {
-    $blocks[] = 'my-namespace/custom-block';
+    $blocks[] = 'my-custom-plugin/unsupported-block';
     return $blocks;
 });
 ```
 
 ---
 
-## 💻 Development & Build Scripts
-
-Built with `@wordpress/scripts` for modern React/JSX and SCSS compilation:
-
-```bash
-# Install dependencies
-pnpm install
-
-# Watch mode for active development
-pnpm run start
-
-# Production build
-pnpm run build
-```
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) before submitting a Pull Request.
-
----
-
 ## 📄 License
 
-This project is licensed under the **GPL-2.0-or-later** license. See [LICENSE](LICENSE) or visit [GNU General Public License](https://www.gnu.org/licenses/gpl-2.0.html) for details.
+This project is open-source software licensed under the [GNU General Public License v2.0 or later (GPL-2.0-or-later)](LICENSE).

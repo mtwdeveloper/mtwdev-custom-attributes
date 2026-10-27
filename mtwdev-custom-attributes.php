@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       MTWDev Custom Block Attributes
- * Plugin URI:        https://github.com/mtwdeveloper/wp-custom-attributes
- * Description:       Añade fácilmente atributos HTML personalizados (data-*, aria-*, booleanos y pares clave-valor) a cualquier bloque de Gutenberg con validación de seguridad, presets rápidos y renderizado nativo.
+ * Plugin URI:        https://github.com/mtwdeveloper/mtwdev-custom-attributes
+ * Description:       Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block with active security, quick presets, and native rendering.
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
@@ -18,50 +18,61 @@
 
 namespace MTWDev\CustomAttributes;
 
-// Salir si se accede directamente para prevenir ejecución arbitraria.
+// Exit if accessed directly to prevent arbitrary execution.
 if (!\defined('ABSPATH')) {
 	exit;
 }
 
-// Constantes maestras del plugin.
+// Plugin constants.
 \define('MTWDEV_CUSTOM_ATTRIBUTES_VERSION', '1.0.0');
 \define('MTWDEV_CUSTOM_ATTRIBUTES_DIR', \plugin_dir_path(__FILE__));
 \define('MTWDEV_CUSTOM_ATTRIBUTES_URL', \plugin_dir_url(__FILE__));
 \define('MTWDEV_CUSTOM_ATTRIBUTES_BASENAME', \plugin_basename(__FILE__));
 
 /**
- * Retorna la lista de bloques donde no está soportado añadir atributos HTML en la raíz.
+ * Loads the plugin textdomain for translations.
+ */
+\add_action('init', function (): void {
+	\load_plugin_textdomain(
+		'mtwdev-custom-attributes',
+		false,
+		\dirname(\plugin_basename(__FILE__)) . '/languages'
+	);
+});
+
+/**
+ * Returns the list of block slugs where custom HTML attributes should not be attached.
  *
- * @return array<string> Slugs de bloques incompatibles.
+ * @return array<string> Incompatible block slugs.
  */
 function get_unsupported_blocks(): array
 {
 	$unsupported = [
-		'core/freeform',      // Editor clásico dentro de bloques
-		'core/html',          // Bloque de HTML personalizado directo
-		'core/shortcode',     // Bloque de Shortcode
-		'core/legacy-widget', // Widgets heredados
+		'core/freeform',      // Classic editor within blocks
+		'core/html',          // Direct raw custom HTML block
+		'core/shortcode',     // Shortcode block
+		'core/legacy-widget', // Legacy widgets
 	];
 
 	/**
-	 * Permite filtrar la lista de bloques incompatibles.
+	 * Filters the list of unsupported blocks.
 	 *
-	 * @param array $unsupported Lista de slugs de bloques no soportados.
+	 * @param array $unsupported List of unsupported block slugs.
 	 */
 	return (array) \apply_filters('mtwdev_custom_attributes_unsupported_blocks', $unsupported);
 }
 
 /**
- * Retorna la lista de nombres de atributos HTML prohibidos por motivos de seguridad o integridad.
+ * Returns the list of disallowed HTML attribute names for security and markup integrity.
  *
- * Bloquea manejadores de eventos JavaScript en línea (on*) y atributos ejecutables para mitigar riesgos XSS.
+ * Prevents inline event handlers (on*), style injections, ID conflicts, and executable attributes.
  *
- * @return array<string> Lista de claves prohibidas.
+ * @return array<string> List of disallowed attribute names.
  */
 function get_disallowed_attributes(): array
 {
 	$disallowed = [
-		// Handlers de eventos DOM (ejecución de scripts inline)
+		// DOM event handlers (inline script execution)
 		'onabort', 'onafterprint', 'onbeforeprint', 'onbeforeunload', 'onblur',
 		'oncanplay', 'oncanplaythrough', 'onchange', 'onclick', 'oncontextmenu',
 		'oncopy', 'oncuechange', 'oncut', 'ondblclick', 'ondrag', 'ondragend',
@@ -76,34 +87,35 @@ function get_disallowed_attributes(): array
 		'onseeking', 'onselect', 'onstalled', 'onstorage', 'onsubmit', 'onsuspend',
 		'ontimeupdate', 'ontoggle', 'onunload', 'onvolumechange', 'onwaiting',
 		'onwheel',
-		// Atributos de documento/recurso ejecutable
-		'srcdoc', 'formaction',
+		// Executable / structural / reserved attributes
+		'srcdoc', 'formaction', 'action', 'xmlns', 'xlink:href', 'poster',
+		'style', 'class', 'id',
 	];
 
 	/**
-	 * Permite filtrar o extender la lista negra de atributos HTML prohibidos.
+	 * Filters the list of disallowed HTML attributes.
 	 *
-	 * @param array $disallowed Lista de atributos prohibidos.
+	 * @param array $disallowed List of disallowed attribute keys.
 	 */
 	return (array) \apply_filters('mtwdev_custom_attributes_disallowed', $disallowed);
 }
 
 /**
- * Sanea y valida estrictamente un nombre de atributo HTML.
+ * Strictly sanitizes and validates an HTML attribute name.
  *
- * @param string $key Nombre del atributo a validar.
- * @return string Nombre saneado o cadena vacía si es inválido o no permitido.
+ * @param string $key Attribute key to validate.
+ * @return string Sanitized attribute key, or empty string if invalid/disallowed.
  */
 function sanitize_attribute_name(string $key): string
 {
 	$clean_key = \strtolower(\trim($key));
 
-	// Solo permitir caracteres válidos para atributos HTML5 (letras, dígitos, guion, guion bajo y dos puntos para namespaces)
+	// Only allow valid HTML5 attribute characters (letters, digits, hyphen, underscore, colon)
 	if (!\preg_match('/^[a-z0-9_\-:]+$/', $clean_key)) {
 		return '';
 	}
 
-	// Prohibir manejadores 'on*' y cualquier atributo en la lista negra
+	// Disallow event handlers starting with 'on' and attributes in the disallowed list
 	if (\strpos($clean_key, 'on') === 0 || \in_array($clean_key, get_disallowed_attributes(), true)) {
 		return '';
 	}
@@ -112,7 +124,41 @@ function sanitize_attribute_name(string $key): string
 }
 
 /**
- * 1. Registra el atributo 'customAttributes' en la definición del servidor para bloques soportados.
+ * Validates whether an attribute value is safe from dangerous pseudo-protocols.
+ *
+ * Mitigates XSS vectors using whitespace/control-character evasion in protocols.
+ *
+ * @param string $value Attribute value to inspect.
+ * @return bool True if safe, false if potentially dangerous.
+ */
+function is_safe_attribute_value(string $value): bool
+{
+	if ($value === '') {
+		return true;
+	}
+
+	// Remove whitespace and control characters before inspecting pseudo-protocols
+	$normalized = (string) \preg_replace('/[\x00-\x20\s]+/u', '', \strtolower($value));
+
+	$dangerous_protocols = [
+		'javascript:',
+		'vbscript:',
+		'data:text/html',
+		'data:application/javascript',
+		'data:application/x-javascript',
+	];
+
+	foreach ($dangerous_protocols as $protocol) {
+		if (\strpos($normalized, $protocol) !== false) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * 1. Registers the 'customAttributes' attribute in the server-side definition for supported blocks.
  */
 \add_filter('register_block_type_args', function (array $args, string $name): array {
 	if (\in_array($name, get_unsupported_blocks(), true)) {
@@ -135,13 +181,19 @@ function sanitize_attribute_name(string $key): string
 }, 10, 2);
 
 /**
- * 2. Inyecta los atributos personalizados validados en la primera etiqueta HTML de apertura del bloque en frontend.
+ * 2. Injects validated custom attributes into the opening HTML tag of the block on frontend.
  *
- * Utiliza WP_HTML_Tag_Processor (estándar oficial WP 6.2+) para una inyección 100% precisa, segura y rápida.
+ * Uses WP_HTML_Tag_Processor (WordPress 6.2+ standard) for accurate, safe, and fast injection.
  */
 \add_filter('render_block', function (string $block_content, array $block): string {
-	// Omitir en administración, si el contenido está vacío o si no hay atributos definidos
-	if (\is_admin() || empty($block_content) || empty($block['attrs']['customAttributes']) || !\is_array($block['attrs']['customAttributes'])) {
+	// Early bailout: skip if in admin, empty content, no HTML tag, or no customAttributes defined
+	if (
+		\is_admin() ||
+		empty($block_content) ||
+		empty($block['attrs']['customAttributes']) ||
+		!\is_array($block['attrs']['customAttributes']) ||
+		\strpos($block_content, '<') === false
+	) {
 		return $block_content;
 	}
 
@@ -150,44 +202,8 @@ function sanitize_attribute_name(string $key): string
 		return $block_content;
 	}
 
-	// Método principal: WP_HTML_Tag_Processor (WordPress 6.2+)
-	if (\class_exists(\WP_HTML_Tag_Processor::class)) {
-		$processor = new \WP_HTML_Tag_Processor($block_content);
-
-		if ($processor->next_tag()) {
-			foreach ($block['attrs']['customAttributes'] as $attr) {
-				if (empty($attr['key']) || !\is_string($attr['key'])) {
-					continue;
-				}
-
-				$key = sanitize_attribute_name($attr['key']);
-				if ($key === '') {
-					continue;
-				}
-
-				$is_boolean = !empty($attr['isBoolean']);
-				$value      = isset($attr['value']) ? \trim((string) $attr['value']) : '';
-
-				if ($is_boolean || $value === '') {
-					// Atributo booleano/simple limpio (ej: <a download ...>)
-					$processor->set_attribute($key, true);
-				} else {
-					// Mitigación de seguridad: evitar pseudo-protocolo 'javascript:'
-					if (\stripos($value, 'javascript:') !== false) {
-						continue;
-					}
-					$processor->set_attribute($key, $value);
-				}
-			}
-
-			return $processor->get_updated_html();
-		}
-
-		return $block_content;
-	}
-
-	// Fallback para entornos anteriores a WP 6.2 mediante regex
-	$html_to_inject = '';
+	// Filter and validate attributes first to avoid unnecessary HTML processing
+	$valid_attributes = [];
 	foreach ($block['attrs']['customAttributes'] as $attr) {
 		if (empty($attr['key']) || !\is_string($attr['key'])) {
 			continue;
@@ -201,13 +217,47 @@ function sanitize_attribute_name(string $key): string
 		$is_boolean = !empty($attr['isBoolean']);
 		$value      = isset($attr['value']) ? \trim((string) $attr['value']) : '';
 
-		if ($is_boolean || $value === '') {
-			$html_to_inject .= ' ' . $key;
-		} else {
-			if (\stripos($value, 'javascript:') !== false) {
-				continue;
+		if (!$is_boolean && $value !== '' && !is_safe_attribute_value($value)) {
+			continue;
+		}
+
+		$valid_attributes[] = [
+			'key'        => $key,
+			'value'      => $value,
+			'is_boolean' => $is_boolean,
+		];
+	}
+
+	if (empty($valid_attributes)) {
+		return $block_content;
+	}
+
+	// Preferred high-performance method: WP_HTML_Tag_Processor (WordPress 6.2+)
+	if (\class_exists(\WP_HTML_Tag_Processor::class)) {
+		$processor = new \WP_HTML_Tag_Processor($block_content);
+
+		if ($processor->next_tag()) {
+			foreach ($valid_attributes as $attr) {
+				if ($attr['is_boolean'] || $attr['value'] === '') {
+					$processor->set_attribute($attr['key'], true);
+				} else {
+					$processor->set_attribute($attr['key'], $attr['value']);
+				}
 			}
-			$html_to_inject .= ' ' . $key . '="' . \esc_attr($value) . '"';
+
+			return $processor->get_updated_html();
+		}
+
+		return $block_content;
+	}
+
+	// Fallback regex for environments earlier than WordPress 6.2
+	$html_to_inject = '';
+	foreach ($valid_attributes as $attr) {
+		if ($attr['is_boolean'] || $attr['value'] === '') {
+			$html_to_inject .= ' ' . $attr['key'];
+		} else {
+			$html_to_inject .= ' ' . $attr['key'] . '="' . \esc_attr($attr['value']) . '"';
 		}
 	}
 
@@ -219,34 +269,36 @@ function sanitize_attribute_name(string $key): string
 }, 10, 2);
 
 /**
- * 3. Blindaje de seguridad pre_kses: si el usuario no tiene la capacidad unfiltered_html,
- * se limpian los customAttributes al guardar para evitar inyecciones en instalaciones multi-autor o multisite.
+ * 3. Security hardening: if the current user lacks the required capability,
+ * strip customAttributes to prevent unauthorized attribute injection.
  */
 \add_filter('pre_kses', function (string $content): string {
 	if (\strpos($content, '<!-- wp:') === false || \strpos($content, 'customAttributes') === false) {
 		return $content;
 	}
 
-	if (\current_user_can('unfiltered_html')) {
+	/**
+	 * Filters the capability required to edit and persist custom HTML attributes.
+	 *
+	 * Default: 'unfiltered_html'.
+	 *
+	 * @param string $capability WordPress capability.
+	 */
+	$required_cap = (string) \apply_filters('mtwdev_custom_attributes_capability', 'unfiltered_html');
+	if (\current_user_can($required_cap)) {
 		return $content;
 	}
 
-	$matches = null;
-	if (\preg_match_all('/\\\?"customAttributes\\\?"\s*:\s*\[[^\]]*\]/', $content, $matches)) {
-		foreach ($matches[0] as $match) {
-			$empty_replacement = '"customAttributes":[]';
-			if (\wp_unslash($match) !== $match) {
-				$empty_replacement = \wp_slash($empty_replacement);
-			}
-			$content = \str_replace($match, $empty_replacement, $content);
-		}
-	}
-
-	return $content;
+	// Safely clear customAttributes array inside block comment JSON without breaking syntax
+	return (string) \preg_replace(
+		'/("customAttributes"\s*:\s*\[)[^\]]*(\])/',
+		'$1$2',
+		$content
+	);
 });
 
 /**
- * 4. Encola los scripts y estilos en el editor de bloques Gutenberg.
+ * 4. Enqueues editor scripts and styles in Gutenberg.
  */
 \add_action('enqueue_block_editor_assets', function (): void {
 	$asset_file = MTWDEV_CUSTOM_ATTRIBUTES_DIR . 'build/index.asset.php';
@@ -265,7 +317,7 @@ function sanitize_attribute_name(string $key): string
 		true
 	);
 
-	// Encolar CSS del editor si se compila
+	// Enqueue editor stylesheet if compiled
 	if (\file_exists(MTWDEV_CUSTOM_ATTRIBUTES_DIR . 'build/index.css')) {
 		\wp_enqueue_style(
 			'mtwdev-custom-attributes-editor',
@@ -275,17 +327,21 @@ function sanitize_attribute_name(string $key): string
 		);
 	}
 
-	// Inyectar datos de configuración y permisos al script del editor
+	/**
+	 * Resolve user capability dynamically so both PHP and React editor UI stay in sync.
+	 */
+	$required_cap = (string) \apply_filters('mtwdev_custom_attributes_capability', 'unfiltered_html');
+
 	\wp_localize_script(
 		'mtwdev-custom-attributes-editor',
 		'mtwdevCustomAttributesData',
 		[
 			'unsupportedBlocks'        => get_unsupported_blocks(),
-			'canUserUseUnfilteredHTML' => \current_user_can('unfiltered_html'),
+			'canUserUseUnfilteredHTML' => \current_user_can($required_cap),
 		]
 	);
 
-	// Traducciones i18n
+	// Register script translations with WordPress core
 	\wp_set_script_translations(
 		'mtwdev-custom-attributes-editor',
 		'mtwdev-custom-attributes',
@@ -293,19 +349,3 @@ function sanitize_attribute_name(string $key): string
 	);
 });
 
-/* ==========================================================================
-   5. ACTUALIZADOR AUTOMÁTICO DESDE GITHUB (PUC)
-   ========================================================================== */
-$mtwdev_puc_file = MTWDEV_CUSTOM_ATTRIBUTES_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
-if (\file_exists($mtwdev_puc_file)) {
-	require_once $mtwdev_puc_file;
-
-	$mtwdev_update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-		'https://github.com/mtwdeveloper/wp-custom-attributes',
-		__FILE__,
-		'mtwdev-custom-attributes'
-	);
-
-	// Indicar que la rama principal es 'main'
-	$mtwdev_update_checker->setBranch('main');
-}

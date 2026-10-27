@@ -2,151 +2,154 @@
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
-[![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![Updates](https://img.shields.io/badge/Updates-GitHub%20Direct-orange.svg)](https://github.com/mtwdeveloper/wp-custom-attributes)
+[![Licencia: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![Tests](https://img.shields.io/badge/Tests-Superados%20(62%2F62)-brightgreen.svg)](#-tests-automatizados)
+[![WordPress.org](https://img.shields.io/badge/WordPress.org-Plugin%20Ready-blue.svg)](https://wordpress.org/)
 
 *Leer en otros idiomas:* [English](README.md) | [Español](README.es.md)
 
-**MTWDev Custom Block Attributes** es un plugin ligero, seguro y extensible para WordPress que permite añadir atributos HTML personalizados (`data-*`, `aria-*`, `title`, booleanos como `download` o `inert`, y cualquier atributo clave-valor) a **cualquier bloque de Gutenberg** directamente desde el editor visual.
+**MTWDev Custom Block Attributes** es un plugin para WordPress ligero, seguro y optimizado para desarrolladores que permite a editores de contenido y desarrolladores inyectar atributos HTML personalizados (`data-*`, `aria-*`, `title`, atributos booleanos como `download` o `inert`, y pares clave-valor) en **cualquier bloque de Gutenberg** directamente desde el editor de bloques.
 
 ---
 
 ## 🚀 Características Principales
 
-- **Integración Nativa en Gutenberg:** Se ubica de forma limpia y discreta dentro del panel **Avanzado** oficial de la barra lateral del editor.
+- **Integración Nativa en Gutenberg:** Integrado de forma limpia dentro del panel oficial **Avanzado** en la barra lateral de ajustes de bloque.
 - **Soporte para Atributos Booleanos y Clave-Valor:**
-  - Atributos estándar: `data-user-id="105"`, `aria-label="Cerrar modal"`, `title="Información"`.
-  - Atributos simples / booleanos (sin valor asignado): `download`, `inert`, `novalidate`, `required`.
-- **Presets de Inserción Rápida:** Acceso inmediato con un clic a los atributos más utilizados (`data-*`, `aria-label`, `title`, `download`, `role`, `tabindex`, `inert`).
-- **Seguridad Robusta:**
-  - Validación estricta de nombres según el estándar HTML5.
-  - Bloqueo preventivo de inyección de código y eventos inline (`onclick`, `onload`, `on*`).
-  - Mitigación de riesgos XSS con sanitización y escapado riguroso en backend (`esc_attr`).
-- **Rendimiento Excepcional (Zero Frontend Bloat):**
-  - No carga scripts ni hojas de estilo adicionales en el frontend.
-  - Inyección en tiempo de renderizado con impacto despreciable en memoria y tiempo de respuesta ($O(1)$).
-- **Arquitectura Oficial con WP_HTML_Tag_Processor:** Utiliza la API nativa de parsing de WordPress core (WP 6.2+) para una inyección de atributos infalible que no rompe la validación de bloques al desactivar el plugin.
-- **Actualizaciones Automáticas desde GitHub:** Incorpora la librería *Plugin Update Checker* (PUC) para recibir actualizaciones directamente en el panel de WordPress ante cada nueva versión publicada en GitHub.
-- **Control de Capacidades (`unfiltered_html`):** Protección nativa en instalaciones multi-autor y Multisite.
-- **Extensible para Desarrolladores:** Filtros PHP para personalizar la lista negra de atributos y los bloques no soportados (`mtwdev_custom_attributes_disallowed` y `mtwdev_custom_attributes_unsupported_blocks`).
+  - Atributos clave-valor: `data-user-id="105"`, `aria-label="Cerrar modal"`, `title="Información"`.
+  - Atributos booleanos limpios sin valor: `download`, `inert`, `novalidate`, `required`.
+- **Barra de Presets Rápidos:** Accesos directos de un solo clic para los atributos más frecuentes (`data-*`, `aria-label`, `title`, `download`, `role`, `tabindex`, `inert`).
+- **Seguridad Multicapa y Mitigación de XSS:**
+  - Validación estricta del nombre del atributo según estándar HTML5 (`/^[a-z0-9_\-:]+$/`).
+  - Bloqueo automático de manejadores de eventos DOM en línea (`onclick`, `onload`, `on*`) y atributos ejecutables (`srcdoc`, `formaction`, `action`, `xmlns`).
+  - Detección profunda de pseudo-protocolos peligrosos (`javascript:`, `vbscript:`, `data:text/html`), incluyendo evasión por espacios o saltos de línea.
+  - Protección de atributos reservados: impide sobrescribir `class`, `id` o `style`.
+- **Cero Impacto en el Rendimiento del Frontend ($O(1)$):**
+  - Cero CSS o JS encolado en el frontend.
+  - Inyección dinámica y ultrarrápida al renderizar con `WP_HTML_Tag_Processor` nativo de WordPress 6.2+.
+- **Cero Invalidación de Bloques:** Los atributos se guardan en metadatos del bloque. Si se desactiva el plugin, los bloques nunca arrojarán errores de validación de Gutenberg (*"Este bloque contiene contenido inesperado o no válido"*).
+- **100% Internacionalizado (i18n):** Cadenas base en inglés según los estándares de WordPress.org y traducción completa al español (`es_ES`) incluida (archivos PO, MO y JSON para Gutenberg).
+- **Suite de Pruebas Automatizadas:** Cobertura de tests para validación, sanitización, vectores de seguridad y renderizado.
+- **Extensible para Desarrolladores:** Filtros PHP para personalizar permisos (`mtwdev_custom_attributes_capability`), atributos no permitidos (`mtwdev_custom_attributes_disallowed`) y bloques incompatibles (`mtwdev_custom_attributes_unsupported_blocks`).
 
 ---
 
 ## 📋 Requisitos
 
-- **WordPress:** 6.0 o superior.
+- **WordPress:** 6.0 o superior (6.2+ recomendado para `WP_HTML_Tag_Processor` nativo).
 - **PHP:** 7.4 o superior (compatible con PHP 8.0, 8.1, 8.2 y 8.3).
-- **Editor de bloques (Gutenberg):** Activo.
+- **Editor de Bloques (Gutenberg):** Activado.
 
 ---
 
 ## 📦 Instalación
 
-### Método 1: Descarga Directa (Usuarios finales)
-
-1. Descarga el archivo ZIP de la última versión desde [Releases](https://github.com/mtwdeveloper/wp-custom-attributes/releases) o haz clic en el botón verde **Code > Download ZIP**.
+### Método 1: Descarga Directa (ZIP)
+1. Descarga el archivo `.zip` más reciente desde [Releases](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases).
 2. En tu panel de administración de WordPress, dirígete a **Plugins > Añadir nuevo > Subir plugin**.
-3. Selecciona el archivo ZIP descargado y haz clic en **Instalar ahora**.
-4. Activa el plugin.
-5. ¡Listo! Recibirás notificaciones de actualización automáticamente en tu panel de WordPress cuando haya nuevas versiones.
+3. Selecciona el archivo ZIP y pulsa **Instalar ahora**.
+4. Pulsa **Activar plugin**.
 
-### Método 2: Clonado con Git (Para Desarrolladores)
-
-1. Clona el repositorio dentro de tu directorio de plugins de WordPress:
+### Método 2: Git Clone (Desarrolladores)
+1. Clona el repositorio en la carpeta de plugins:
    ```bash
    cd wp-content/plugins/
-   git clone https://github.com/mtwdeveloper/wp-custom-attributes.git mtwdev-custom-attributes
+   git clone https://github.com/mtwdeveloper/mtwdev-custom-attributes.git mtwdev-custom-attributes
    ```
-2. Instala las dependencias y compila los assets del editor:
+2. Instala dependencias y compila los assets del editor:
    ```bash
    cd mtwdev-custom-attributes
    pnpm install
    pnpm run build
    ```
-3. Activa **MTWDev Custom Block Attributes** desde **Plugins > Plugins Instalados** (o con `wp plugin activate mtwdev-custom-attributes`).
+3. Activa el plugin en el panel de WordPress.
+
+---
+
+## 🧪 Tests Automatizados
+
+El plugin incluye pruebas automáticas completas tanto en JavaScript como en PHP:
+
+```bash
+# Ejecutar toda la suite de tests (JS + PHP)
+pnpm test
+
+# Ejecutar tests unitarios de JavaScript (Jest mediante @wordpress/scripts)
+pnpm run test:js
+
+# Ejecutar tests unitarios e integrados de PHP
+pnpm run test:php
+```
+
+Los 62 tests (9 de JS y 53 de PHP) se ejecutan de forma aislada y verifican sanitización, validación, protocolos de seguridad y renderizado.
+
+---
+
+## 🌍 Internacionalización (i18n)
+
+Para actualizar o compilar traducciones:
+
+```bash
+# Generar la plantilla de traducción POT
+pnpm run i18n:pot
+
+# Compilar archivos PO/MO y traducciones JSON para Gutenberg
+pnpm run i18n:build
+```
 
 ---
 
 ## 🛠️ Cómo Utilizarlo
 
 1. Abre cualquier entrada, página o plantilla en el **Editor de Bloques (Gutenberg)**.
-2. Haz clic sobre cualquier bloque que desees personalizar (botón, grupo, imagen, párrafo, titular, etc.).
-3. En la barra lateral derecha de ajustes del bloque, despliega la pestaña **Avanzado**.
-4. Verás la sección **Atributos HTML Personalizados**:
-   - Pulsa sobre cualquiera de los **Presets rápidos** (ej. `+data-*` o `+download`) o escribe manualmente el nombre del atributo.
-   - Si se trata de un atributo booleano sin valor (como `download` o `inert`), marca la casilla **Atributo simple / booleano**.
-   - Haz clic en **Añadir**.
-   - Si no es booleano, introduce el valor deseado en el campo de texto correspondiente.
-5. Guarda o publica tu contenido. El atributo se inyectará de forma limpia en la etiqueta raíz del bloque en el frontend.
+2. Selecciona cualquier bloque que desees personalizar (Botón, Grupo, Imagen, Párrafo, Encabezado, etc.).
+3. En la barra lateral derecha, despliega el panel **Avanzado**.
+4. En la sección **Atributos HTML Personalizados**:
+   - Pulsa cualquier botón de **Preset rápido** (ej. `+data-*` o `+download`) o escribe el nombre del atributo.
+   - Si se trata de un atributo booleano sin valor (como `download` o `inert`), activa **Atributo simple / booleano (sin valor)**.
+   - Pulsa **Añadir**.
+   - Si no es booleano, introduce el valor deseado en el campo de texto.
+5. Guarda o publica tu contenido.
 
 ---
 
 ## 🛡️ Seguridad y Buenas Prácticas
 
-El plugin sigue escrupulosamente los estándares de código de WordPress (WPCS):
-
-1. **Lista Negra de Atributos:**  
-   Se deniegan automáticamente todos los atributos que comiencen por `on` (como `onclick`, `onerror`, `onload`) y atributos con riesgo de ejecución de código externo (como `srcdoc` o `formaction`).
-2. **Sanitización y Escapado:**  
-   Las claves se validan con regex `^[a-z0-9_\-:]+$` y los valores se filtran con `esc_attr()`, neutralizando intentos de salto de etiquetas o inyección HTML.
-3. **Bloqueo de Pseudo-Protocolos:**  
-   Se invalidan valores que contengan `javascript:`.
-4. **Respeto a Capacidades Nativas:**  
-   Si el usuario que edita no tiene la capability `unfiltered_html`, la interfaz deshabilita la edición y el filtro `pre_kses` sanea el contenido al guardar.
+1. **Lista de Exclusión:** Deniega todos los manejadores de eventos que empiezan por `on*` (`onclick`, `onerror`, etc.) y atributos de ejecución (`srcdoc`, `formaction`, `xmlns`).
+2. **Sanitización y Escape:** Nombres validados con regex y valores saneados con `WP_HTML_Tag_Processor` o `esc_attr()`.
+3. **Control de Protocolos:** Bloqueo exhaustivo de `javascript:`, `vbscript:` y `data:text/html`.
+4. **Comprobación de Capacidades:** Los usuarios que no dispongan del permiso configurado (por defecto `unfiltered_html`) no pueden inyectar atributos y el contenido se limpia de forma segura mediante el filtro `pre_kses`.
 
 ---
 
-## 🔌 API y Extensibilidad
+## 🔌 API de Desarrolladores y Filtros
 
-### Modificar o ampliar la lista de atributos restringidos
+### Personalizar la Capacidad Requerida
+```php
+add_filter('mtwdev_custom_attributes_capability', function (string $cap): string {
+    // Permitir a cualquier usuario con permisos de edición de entradas
+    return 'edit_posts';
+});
+```
 
+### Personalizar Atributos Prohibidos
 ```php
 add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): array {
-    // Bloquear atributos adicionales según la política de tu proyecto
-    $disallowed[] = 'custom-dangerous-attr';
+    $disallowed[] = 'custom-restricted-attr';
     return $disallowed;
 });
 ```
 
-### Excluir bloques adicionales
-
+### Personalizar Bloques Incompatibles
 ```php
 add_filter('mtwdev_custom_attributes_unsupported_blocks', function (array $blocks): array {
-    $blocks[] = 'mi-namespace/bloque-especial';
+    $blocks[] = 'mi-plugin/bloque-no-soportado';
     return $blocks;
 });
 ```
 
 ---
 
-## 💻 Desarrollo y Compilación
-
-Este plugin utiliza `@wordpress/scripts` para la compilación de JavaScript moderno (React/JSX) y SCSS:
-
-```bash
-# Instalar dependencias con pnpm
-pnpm install
-
-# Modo desarrollo con recarga automática en cambios (watch)
-pnpm run start
-
-# Compilación optimizada para producción
-pnpm run build
-```
-
----
-
-## 🤝 Cómo Contribuir
-
-¡Las contribuciones, sugerencias y mejoras son muy bienvenidas! Si deseas reportar un error o proponer una nueva funcionalidad, consulta nuestra [Guía de Contribución](CONTRIBUTING.es.md).
-
-1. Haz un **Fork** de este repositorio.
-2. Crea una rama para tu mejora (`git checkout -b feature/nueva-mejora`).
-3. Realiza tus cambios asegurándote de compilar con `pnpm run build`.
-4. Envía un **Pull Request** explicando detalladamente el cambio.
-
----
-
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia **GPL-2.0-or-later**. Consulta el archivo `LICENSE` o visita [GNU General Public License](https://www.gnu.org/licenses/gpl-2.0.html) para más detalles.
+Este proyecto es software de código abierto bajo la licencia [GNU General Public License v2.0 or later (GPL-2.0-or-later)](LICENSE).

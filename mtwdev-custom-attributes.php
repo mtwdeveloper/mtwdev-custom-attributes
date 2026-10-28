@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name:       MTWDev Custom Block Attributes
+ * Plugin Name:       Custom Block Attributes
  * Plugin URI:        https://github.com/mtwdeveloper/mtwdev-custom-attributes
  * Description:       Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block with active security, quick presets, and native rendering.
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
- * Author:            MTWdev
- * Author URI:        https://github.com/mtwdeveloper
+ * Author:            Marco Torres Walker (mtwdev)
+ * Author URI:        https://mtwdev.com/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       mtwdev-custom-attributes
@@ -348,4 +348,3 @@ function is_safe_attribute_value(string $value): bool
 		MTWDEV_CUSTOM_ATTRIBUTES_DIR . 'languages'
 	);
 });
-

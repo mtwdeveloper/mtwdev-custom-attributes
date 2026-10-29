@@ -3,8 +3,8 @@
  * Plugin Name:       Custom Block Attributes
  * Plugin URI:        https://github.com/mtwdeveloper/mtwdev-custom-attributes
  * Description:       Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block with active security, quick presets, and native rendering.
- * Version:           1.0.0
- * Requires at least: 6.0
+ * Version:           1.1.0
+ * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            Marco Torres Walker (mtwdev)
  * Author URI:        https://mtwdev.com/
@@ -19,26 +19,23 @@
 namespace MTWDev\CustomAttributes;
 
 // Exit if accessed directly to prevent arbitrary execution.
-if (!\defined('ABSPATH')) {
-	exit;
-}
+// Written in the canonical one-line form Plugin Check and the review team expect.
+\defined('ABSPATH') || exit;
 
 // Plugin constants.
-\define('MTWDEV_CUSTOM_ATTRIBUTES_VERSION', '1.0.0');
+\define('MTWDEV_CUSTOM_ATTRIBUTES_VERSION', '1.1.0');
 \define('MTWDEV_CUSTOM_ATTRIBUTES_DIR', \plugin_dir_path(__FILE__));
 \define('MTWDEV_CUSTOM_ATTRIBUTES_URL', \plugin_dir_url(__FILE__));
 \define('MTWDEV_CUSTOM_ATTRIBUTES_BASENAME', \plugin_basename(__FILE__));
 
 /**
- * Loads the plugin textdomain for translations.
+ * Translations are delivered as language packs from translate.wordpress.org.
+ *
+ * Since WordPress 4.6 the core textdomain registry loads them just in time for
+ * plugins hosted on WordPress.org, so no load_plugin_textdomain() call is needed
+ * (and Plugin Check flags it as discouraged). The bundled .pot file is only the
+ * translation template for contributors.
  */
-\add_action('init', function (): void {
-	\load_plugin_textdomain(
-		'mtwdev-custom-attributes',
-		false,
-		\dirname(\plugin_basename(__FILE__)) . '/languages'
-	);
-});
 
 /**
  * Returns the list of block slugs where custom HTML attributes should not be attached.
@@ -63,9 +60,65 @@ function get_unsupported_blocks(): array
 }
 
 /**
- * Returns the list of disallowed HTML attribute names for security and markup integrity.
+ * Returns the allow list of custom HTML attribute names and name prefixes.
  *
- * Prevents inline event handlers (on*), style injections, ID conflicts, and executable attributes.
+ * An allow list is used on purpose: a deny list can never enumerate every XML/XHTML
+ * namespace (`xmlns:*`) or URL-bearing attribute (`href`, `src`) a browser may execute.
+ *
+ * @return array{exact: array<string>, prefixes: array<string>} Allowed names and prefixes.
+ */
+function get_allowed_attributes(): array
+{
+	$allowed = [
+		'exact'    => [
+			'autocomplete', 'dir', 'download', 'for', 'hidden', 'inert', 'lang',
+			'name', 'rel', 'role', 'tabindex', 'target', 'title', 'xml:lang',
+		],
+		'prefixes' => ['aria-', 'data-'],
+	];
+
+	/**
+	 * Filters the allow list of custom HTML attributes.
+	 *
+	 * @param array{exact: array<string>, prefixes: array<string>} $allowed Allowed names and prefixes.
+	 */
+	return (array) \apply_filters('mtwdev_custom_attributes_allowed', $allowed);
+}
+
+/**
+ * Checks whether an attribute name is on the allow list.
+ *
+ * @param string $key Lowercased attribute name.
+ * @return bool True when the name is allowed.
+ */
+function is_allowed_attribute_name(string $key): bool
+{
+	$allowed = get_allowed_attributes();
+	$exact   = isset($allowed['exact']) ? (array) $allowed['exact'] : [];
+
+	if (\in_array($key, $exact, true)) {
+		return true;
+	}
+
+	$prefixes = isset($allowed['prefixes']) ? (array) $allowed['prefixes'] : [];
+	foreach ($prefixes as $prefix) {
+		$prefix = \strtolower((string) $prefix);
+
+		// A bare prefix ("data-") is not a valid attribute name on its own.
+		if ($prefix !== '' && \strlen($key) > \strlen($prefix) && \strpos($key, $prefix) === 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Returns the list of disallowed HTML attribute names kept as an extra deny list.
+ *
+ * Defence in depth on top of the allow list: inline event handlers (on*), style
+ * injections, ID conflicts, and executable attributes stay blocked even if the
+ * allow list is widened through its filter.
  *
  * @return array<string> List of disallowed attribute names.
  */
@@ -115,8 +168,13 @@ function sanitize_attribute_name(string $key): string
 		return '';
 	}
 
-	// Disallow event handlers starting with 'on' and attributes in the disallowed list
-	if (\strpos($clean_key, 'on') === 0 || \in_array($clean_key, get_disallowed_attributes(), true)) {
+	// Disallow event handlers starting with 'on'
+	if (\strpos($clean_key, 'on') === 0) {
+		return '';
+	}
+
+	// Allow list first, then the legacy deny list as defence in depth
+	if (!is_allowed_attribute_name($clean_key) || \in_array($clean_key, get_disallowed_attributes(), true)) {
 		return '';
 	}
 
@@ -155,6 +213,24 @@ function is_safe_attribute_value(string $value): bool
 	}
 
 	return true;
+}
+
+/**
+ * Helper function: Checks if the current user has capability to save custom attributes.
+ *
+ * @return bool
+ */
+function user_can_manage_custom_attributes(): bool
+{
+    /**
+     * Filters the capability required to edit and persist custom HTML attributes.
+     *
+     * Default: 'unfiltered_html'.
+     *
+     * @param string $capability WordPress capability.
+     */
+    $required_cap = (string) \apply_filters('mtwdev_custom_attributes_capability', 'unfiltered_html');
+    return \current_user_can($required_cap);
 }
 
 /**
@@ -269,33 +345,63 @@ function is_safe_attribute_value(string $value): bool
 }, 10, 2);
 
 /**
- * 3. Security hardening: if the current user lacks the required capability,
- * strip customAttributes to prevent unauthorized attribute injection.
+ * Removes the 'customAttributes' key from a parsed block tree, recursively.
+ *
+ * @param array<int, array<string, mixed>> $blocks Parsed blocks, modified in place.
+ * @return void
  */
-\add_filter('pre_kses', function (string $content): string {
+function strip_custom_attributes(array &$blocks): void
+{
+	foreach ($blocks as &$block) {
+		if (isset($block['attrs']['customAttributes'])) {
+			unset($block['attrs']['customAttributes']);
+		}
+
+		if (!empty($block['innerBlocks']) && \is_array($block['innerBlocks'])) {
+			strip_custom_attributes($block['innerBlocks']);
+		}
+	}
+	unset($block);
+}
+
+/**
+ * 3. Security hardening: strip 'customAttributes' when the user lacks the capability.
+ *
+ * Runs on 'content_save_pre' at priority 9, i.e. before wp_filter_post_kses() (priority 10),
+ * so every save path is covered (block editor REST, classic editor, XML-RPC, imports) and
+ * kses never receives block comment JSON it could corrupt. The document is parsed with
+ * parse_blocks() and rebuilt with serialize_blocks() instead of a regex over the JSON.
+ */
+\add_filter('content_save_pre', function ($content) {
+	if (!\is_string($content) || $content === '') {
+		return $content;
+	}
+
+	// Early bailout: no block markup or no custom attributes in this content.
 	if (\strpos($content, '<!-- wp:') === false || \strpos($content, 'customAttributes') === false) {
 		return $content;
 	}
 
-	/**
-	 * Filters the capability required to edit and persist custom HTML attributes.
-	 *
-	 * Default: 'unfiltered_html'.
-	 *
-	 * @param string $capability WordPress capability.
-	 */
-	$required_cap = (string) \apply_filters('mtwdev_custom_attributes_capability', 'unfiltered_html');
-	if (\current_user_can($required_cap)) {
+	// Programmatic saves without a logged-in user (WP-CLI, imports, cron) are not user input.
+	if (!\is_user_logged_in()) {
 		return $content;
 	}
 
-	// Safely clear customAttributes array inside block comment JSON without breaking syntax
-	return (string) \preg_replace(
-		'/("customAttributes"\s*:\s*\[)[^\]]*(\])/',
-		'$1$2',
-		$content
-	);
-});
+	if (user_can_manage_custom_attributes()) {
+		return $content;
+	}
+
+	// 'content_save_pre' receives slashed data: parse the real markup and re-slash afterwards.
+	$blocks = \parse_blocks(\wp_unslash($content));
+
+	if (empty($blocks)) {
+		return $content;
+	}
+
+	strip_custom_attributes($blocks);
+
+	return \wp_slash(\serialize_blocks($blocks));
+}, 9, 1);
 
 /**
  * 4. Enqueues editor scripts and styles in Gutenberg.
@@ -332,13 +438,15 @@ function is_safe_attribute_value(string $value): bool
 	 */
 	$required_cap = (string) \apply_filters('mtwdev_custom_attributes_capability', 'unfiltered_html');
 
-	\wp_localize_script(
+	\wp_add_inline_script(
 		'mtwdev-custom-attributes-editor',
-		'mtwdevCustomAttributesData',
-		[
-			'unsupportedBlocks'        => get_unsupported_blocks(),
-			'canUserUseUnfilteredHTML' => \current_user_can($required_cap),
-		]
+		'window.mtwdevCustomAttributesData = ' . \wp_json_encode(
+			[
+				'unsupportedBlocks'        => \array_values(get_unsupported_blocks()),
+				'canUserUseUnfilteredHTML' => \current_user_can($required_cap),
+			]
+		) . ';',
+		'before'
 	);
 
 	// Register script translations with WordPress core

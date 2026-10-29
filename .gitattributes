@@ -8,8 +8,9 @@
 *.gif binary
 *.ico binary
 
-# Excluir carpetas de desarrollo, tests y fuentes del ZIP de distribución / exportación
-/src/ export-ignore
+# Excluir carpetas de desarrollo y tests del ZIP de distribución / exportación.
+# /src/ y /package.json NO se excluyen: la Guía 4 exige que el fuente legible de
+# los assets compilados esté disponible junto al plugin o enlazado en el readme.
 /tests/ export-ignore
 /node_modules/ export-ignore
 /.git/ export-ignore
@@ -19,8 +20,12 @@
 # Excluir archivos de configuración de desarrollo del ZIP final
 /.gitignore export-ignore
 /.gitattributes export-ignore
-/package.json export-ignore
+/.distignore export-ignore
 /pnpm-lock.yaml export-ignore
 /pnpm-workspace.yaml export-ignore
 /CONTRIBUTING.md export-ignore
 /CONTRIBUTING.es.md export-ignore
+
+# Documentación no estándar en la raíz: se queda en el repositorio, no en el ZIP.
+# Plugin Check marca como aviso cualquier .md que no sea el readme oficial.
+/*.md export-ignore

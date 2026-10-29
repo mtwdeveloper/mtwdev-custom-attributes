@@ -1,14 +1,14 @@
-# MTWDev Custom Block Attributes
+# Custom Block Attributes
 
-[![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)](https://wordpress.org/)
+[![WordPress](https://img.shields.io/badge/WordPress-6.6%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![Licencia: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![Tests](https://img.shields.io/badge/Tests-Superados%20(62%2F62)-brightgreen.svg)](#-tests-automatizados)
-[![WordPress.org](https://img.shields.io/badge/WordPress.org-Plugin%20Ready-blue.svg)](https://wordpress.org/)
+[![Tests](https://img.shields.io/badge/Tests-Superados%20(88%2F88)-brightgreen.svg)](#-tests-automatizados)
+[![Versión](https://img.shields.io/badge/Versi%C3%B3n-1.1.0-informational.svg)](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases)
 
 *Leer en otros idiomas:* [English](README.md) | [Español](README.es.md)
 
-**MTWDev Custom Block Attributes** es un plugin para WordPress ligero, seguro y optimizado para desarrolladores que permite a editores de contenido y desarrolladores inyectar atributos HTML personalizados (`data-*`, `aria-*`, `title`, atributos booleanos como `download` o `inert`, y pares clave-valor) en **cualquier bloque de Gutenberg** directamente desde el editor de bloques.
+**Custom Block Attributes** es un plugin para WordPress ligero, seguro y optimizado para desarrolladores que permite a editores de contenido y desarrolladores inyectar atributos HTML personalizados (`data-*`, `aria-*`, `title`, atributos booleanos como `download` o `inert`, y pares clave-valor) en **cualquier bloque de Gutenberg** directamente desde el editor de bloques.
 
 ---
 
@@ -21,22 +21,24 @@
 - **Barra de Presets Rápidos:** Accesos directos de un solo clic para los atributos más frecuentes (`data-*`, `aria-label`, `title`, `download`, `role`, `tabindex`, `inert`).
 - **Seguridad Multicapa y Mitigación de XSS:**
   - Validación estricta del nombre del atributo según estándar HTML5 (`/^[a-z0-9_\-:]+$/`).
-  - Bloqueo automático de manejadores de eventos DOM en línea (`onclick`, `onload`, `on*`) y atributos ejecutables (`srcdoc`, `formaction`, `action`, `xmlns`).
+  - Validación por lista blanca: solo se inyectan `data-*`, `aria-*` y un conjunto documentado de atributos estándar (`role`, `title`, `tabindex`, `lang`, `dir`, `inert`, `hidden`, `download`, `rel`, `target`, `name`, `for`, `autocomplete`, `xml:lang`). Los atributos con URL y los de espacio de nombres (`href`, `src`, `xmlns:*`, `xlink:*`) se rechazan siempre.
+  - Bloqueo automático de manejadores de eventos DOM en línea (`onclick`, `onload`, `on*`) y atributos ejecutables (`srcdoc`, `formaction`, `action`).
   - Detección profunda de pseudo-protocolos peligrosos (`javascript:`, `vbscript:`, `data:text/html`), incluyendo evasión por espacios o saltos de línea.
   - Protección de atributos reservados: impide sobrescribir `class`, `id` o `style`.
+  - Refuerzo al guardar: los usuarios sin la capacidad requerida pierden `customAttributes` al guardar, analizando y reconstruyendo el documento con `parse_blocks()`/`serialize_blocks()`, de modo que el marcado del bloque nunca se corrompe.
 - **Cero Impacto en el Rendimiento del Frontend ($O(1)$):**
   - Cero CSS o JS encolado en el frontend.
   - Inyección dinámica y ultrarrápida al renderizar con `WP_HTML_Tag_Processor` nativo de WordPress 6.2+.
 - **Cero Invalidación de Bloques:** Los atributos se guardan en metadatos del bloque. Si se desactiva el plugin, los bloques nunca arrojarán errores de validación de Gutenberg (*"Este bloque contiene contenido inesperado o no válido"*).
-- **100% Internacionalizado (i18n):** Cadenas base en inglés según los estándares de WordPress.org y traducción completa al español (`es_ES`) incluida (archivos PO, MO y JSON para Gutenberg).
-- **Suite de Pruebas Automatizadas:** Cobertura de tests para validación, sanitización, vectores de seguridad y renderizado.
-- **Extensible para Desarrolladores:** Filtros PHP para personalizar permisos (`mtwdev_custom_attributes_capability`), atributos no permitidos (`mtwdev_custom_attributes_disallowed`) y bloques incompatibles (`mtwdev_custom_attributes_unsupported_blocks`).
+- **Preparado para traducir (i18n):** Cadenas base en inglés, plantilla en `languages/` y traducciones de la comunidad servidas como language packs desde translate.wordpress.org. Sin archivos `.po`/`.mo`/`.json` empaquetados.
+- **Suite de Pruebas Automatizadas:** Tests PHP y JavaScript de validación, sanitización, vectores de seguridad, refuerzo al guardar y renderizado.
+- **Extensible para Desarrolladores:** Filtros PHP para personalizar permisos (`mtwdev_custom_attributes_capability`), la lista blanca de atributos (`mtwdev_custom_attributes_allowed`), la lista negra adicional (`mtwdev_custom_attributes_disallowed`) y bloques incompatibles (`mtwdev_custom_attributes_unsupported_blocks`).
 
 ---
 
 ## 📋 Requisitos
 
-- **WordPress:** 6.0 o superior (6.2+ recomendado para `WP_HTML_Tag_Processor` nativo).
+- **WordPress:** 6.6 o superior (necesario por la dependencia de script `react-jsx-runtime` que usa el bundle compilado del editor).
 - **PHP:** 7.4 o superior (compatible con PHP 8.0, 8.1, 8.2 y 8.3).
 - **Editor de Bloques (Gutenberg):** Activado.
 
@@ -81,21 +83,20 @@ pnpm run test:js
 pnpm run test:php
 ```
 
-Los 62 tests (9 de JS y 53 de PHP) se ejecutan de forma aislada y verifican sanitización, validación, protocolos de seguridad y renderizado.
+Los 88 tests (11 de JS y 77 de PHP) se ejecutan de forma aislada y verifican sanitización, validación, protocolos de seguridad, el refuerzo al guardar y el renderizado.
 
 ---
 
 ## 🌍 Internacionalización (i18n)
 
-Para actualizar o compilar traducciones:
+El plugin no incluye traducciones compiladas: cada idioma se sirve como language pack desde [translate.wordpress.org](https://translate.wordpress.org/). En local solo se genera la plantilla:
 
 ```bash
-# Generar la plantilla de traducción POT
+# Regenerar languages/mtwdev-custom-attributes.pot (cadenas PHP + JS)
 pnpm run i18n:pot
-
-# Compilar archivos PO/MO y traducciones JSON para Gutenberg
-pnpm run i18n:build
 ```
+
+Si añades o cambias cualquier cadena visible, ejecuta ese comando y haz commit del `.pot` actualizado, para que GlotPress detecte las cadenas nuevas. El flujo completo está en [CONTRIBUTING.es.md](CONTRIBUTING.es.md#-traducciones).
 
 ---
 
@@ -129,6 +130,18 @@ pnpm run i18n:build
 add_filter('mtwdev_custom_attributes_capability', function (string $cap): string {
     // Permitir a cualquier usuario con permisos de edición de entradas
     return 'edit_posts';
+});
+```
+
+### Ampliar los Atributos Permitidos
+
+Los atributos se validan contra una lista blanca. Añade aquí tus propios nombres o prefijos; seguirán pasando por la lista negra y por la comprobación de pseudo-protocolos.
+
+```php
+add_filter('mtwdev_custom_attributes_allowed', function (array $allowed): array {
+    $allowed['exact'][]    = 'data-qa-id';
+    $allowed['prefixes'][] = 'x-company-';
+    return $allowed;
 });
 ```
 

@@ -1,8 +1,8 @@
-# Guía de Contribución a MTWDev Custom Block Attributes
+# Guía de Contribución a Custom Block Attributes
 
 _Leer en otros idiomas:_ [English](CONTRIBUTING.md) | [Español](CONTRIBUTING.es.md)
 
-¡Gracias por tu interés en contribuir a **MTWDev Custom Block Attributes**! Este proyecto es de código abierto y agradecemos enormemente las sugerencias, reportes de errores y aportaciones de código de la comunidad.
+¡Gracias por tu interés en contribuir a **Custom Block Attributes**! Este proyecto es de código abierto y agradecemos enormemente las sugerencias, reportes de errores y aportaciones de código de la comunidad.
 
 Para asegurar un desarrollo ordenado, consistente y de alta calidad, te pedimos que leas y sigas las siguientes directrices antes de colaborar.
 
@@ -71,6 +71,38 @@ Para mantener la integridad y calidad del proyecto, solicitamos cumplir con las 
 - Emplea siempre los paquetes oficiales de WordPress (`@wordpress/block-editor`, `@wordpress/components`, `@wordpress/compose`, `@wordpress/element`, `@wordpress/hooks`, `@wordpress/i18n`).
 - **Prohibido** usar `wp.element.createElement` manual en el código fuente de `src/`.
 - Aplica internacionalización en todos los textos de la interfaz mediante `__('...', 'mtwdev-custom-attributes')`.
+
+---
+
+## 🌍 Traducciones
+
+El plugin **no incluye traducciones compiladas**. Las cadenas base están en inglés y cada idioma se sirve como language pack que WordPress.org genera a partir de las traducciones de la comunidad.
+
+1. Toda cadena visible debe usar el text domain del plugin: `__('...', 'mtwdev-custom-attributes')` en PHP y JavaScript.
+2. Si añades o cambias una cadena, regenera la plantilla y haz commit:
+   ```bash
+   pnpm run i18n:pot
+   ```
+3. Una vez publicado, las traducciones se gestionan en [translate.wordpress.org](https://translate.wordpress.org/). **No** vuelvas a añadir archivos `.po`, `.mo` ni `.json` de scripts a `languages/`.
+4. No edites el `.pot` a mano: se genera desde el código.
+
+---
+
+## 🚀 Publicación de Versiones
+
+WordPress.org no compila nada, así que `build/` debe estar commiteado y viajar en el paquete.
+
+1. Sube la versión en `mtwdev-custom-attributes.php` (cabecera y `MTWDEV_CUSTOM_ATTRIBUTES_VERSION`), `readme.txt` (`Stable tag`) y `package.json`.
+2. Añade una entrada `= x.y.z =` en `== Changelog ==` de `readme.txt`.
+3. Ejecuta `pnpm run build` y `pnpm test`.
+4. Pasa Plugin Check (Herramientas → Plugin Check) con **todas** las categorías, incluida Accessibility.
+5. Genera el paquete de distribución:
+   ```bash
+   git archive --worktree-attributes -o mtwdev-custom-attributes.zip HEAD
+   ```
+   `.gitattributes` (`export-ignore`) deja fuera `tests/`, `.git*`, los lockfiles y todos los `.md` de la raíz. `.distignore` replica esa lista para `10up/action-wordpress-plugin-deploy`, que usa `.distignore` y no lee `.gitattributes`.
+6. La publicación sube a SVN `trunk/` (`build/`, `readme.txt`, `LICENSE`, `languages/`, `src/`) y crea `tags/x.y.z/`. Las capturas, el banner y el icono van a `/assets/` de SVN, nunca dentro de la carpeta del plugin.
+7. `Contributors:` en `readme.txt` debe ser tu usuario real de wordpress.org; si no, el plugin no aparece en tu perfil y no recibirás los avisos de soporte.
 
 ---
 

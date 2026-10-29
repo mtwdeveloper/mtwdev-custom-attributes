@@ -70,8 +70,36 @@ describe('validateNewAttribute', () => {
 		expect(result.error).toContain('already added to this block');
 	});
 
+	it('rejects a bare prefix with a specific message', () => {
+		for (const prefix of ['data-', 'aria-']) {
+			const result = validateNewAttribute(prefix);
+			expect(result.isValid).toBe(false);
+			expect(result.error).toContain('is only a prefix');
+		}
+	});
+
+	it('rejects names that are not on the allow list', () => {
+		const refusedKeys = ['href', 'src', 'xmlns:xlink', 'col', 'custom:ns'];
+		for (const key of refusedKeys) {
+			const result = validateNewAttribute(key);
+			expect(result.isValid).toBe(false);
+			expect(result.error).toContain('disallowed for security reasons');
+		}
+	});
+
 	it('accepts valid custom attributes', () => {
-		const validKeys = ['data-tracking-id', 'aria-describedby', 'title', 'download', 'custom:ns'];
+		const validKeys = [
+			'data-tracking-id',
+			'aria-describedby',
+			'title',
+			'download',
+			'role',
+			'tabindex',
+			'lang',
+			'dir',
+			'inert',
+			'xml:lang',
+		];
 		for (const key of validKeys) {
 			const result = validateNewAttribute(key, []);
 			expect(result.isValid).toBe(true);

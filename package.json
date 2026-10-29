@@ -1,6 +1,6 @@
 {
   "name": "mtwdev-custom-attributes",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block safely, lightly, and extensibly.",
   "author": "MTWdev",
   "license": "GPL-2.0-or-later",
@@ -17,8 +17,7 @@
     "test:js": "wp-scripts test-unit-js",
     "test:php": "php tests/run-tests.php",
     "test": "pnpm run test:js && pnpm run test:php",
-    "i18n:pot": "wp i18n make-pot . languages/mtwdev-custom-attributes.pot --domain=mtwdev-custom-attributes",
-    "i18n:build": "wp i18n make-mo languages/ languages/ && wp i18n make-json languages/ languages/ --no-purge"
+    "i18n:pot": "wp i18n make-pot . languages/mtwdev-custom-attributes.pot --domain=mtwdev-custom-attributes --exclude=node_modules,tests,build,languages"
   },
   "devDependencies": {
     "@wordpress/scripts": "34.1.0"

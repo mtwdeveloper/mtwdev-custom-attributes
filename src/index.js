@@ -38,21 +38,24 @@ const getUnsupportedBlocks = () => {
 	);
 };
 
-// 1. Declare 'customAttributes' attribute on all supported blocks
+// 1. Declare 'customAttributes' attribute on all supported blocks.
+// The server registers it too, but this hook also covers blocks registered only in JS.
 addFilter(
-	'blocks.registerBlockTypeAttributes',
+	'blocks.registerBlockType',
 	'mtwdev-custom-attributes/register-attributes',
-	(attributes, blockType) => {
-		const blockName = blockType?.name || '';
-		if (getUnsupportedBlocks().includes(blockName)) {
-			return attributes;
+	(settings, name) => {
+		if (getUnsupportedBlocks().includes(name)) {
+			return settings;
 		}
 
 		return {
-			...attributes,
-			customAttributes: {
-				type: 'array',
-				default: [],
+			...settings,
+			attributes: {
+				...(settings.attributes || {}),
+				customAttributes: {
+					type: 'array',
+					default: [],
+				},
 			},
 		};
 	},

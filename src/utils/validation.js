@@ -22,6 +22,47 @@ export const DISALLOWED_ATTRIBUTES = [
 ];
 
 /**
+ * Attribute names allowed on rendered blocks (mirrors the PHP allow list).
+ */
+export const ALLOWED_ATTRIBUTES = [
+	'autocomplete',
+	'dir',
+	'download',
+	'for',
+	'hidden',
+	'inert',
+	'lang',
+	'name',
+	'rel',
+	'role',
+	'tabindex',
+	'target',
+	'title',
+	'xml:lang',
+];
+
+/**
+ * Allowed attribute name prefixes.
+ */
+export const ALLOWED_PREFIXES = ['aria-', 'data-'];
+
+/**
+ * Checks whether an attribute name is on the allow list.
+ *
+ * @param {string} key Sanitized attribute key.
+ * @return {boolean} True when the name is allowed.
+ */
+export function isAllowedAttributeName(key) {
+	if (ALLOWED_ATTRIBUTES.includes(key)) {
+		return true;
+	}
+
+	return ALLOWED_PREFIXES.some(
+		(prefix) => key.length > prefix.length && key.startsWith(prefix),
+	);
+}
+
+/**
  * Sanitizes an attribute name (lowercase and trimmed).
  *
  * @param {string} key Attribute key.
@@ -108,9 +149,40 @@ export function validateNewAttribute(key, currentAttributes = []) {
 		};
 	}
 
-	// Check duplicates
-	if (currentAttributes.some((attr) => attr.key === cleanKey)) {
+	// A bare prefix ("data-", "aria-") is not a complete attribute name
+	if (ALLOWED_PREFIXES.includes(cleanKey)) {
 		return {
+			isValid: false,
+			error: sprintf(
+				/* translators: %s: Attribute prefix, e.g. "data-" */
+				__(
+					'Incomplete attribute: "%s" is only a prefix. Add a name after it, e.g. "data-track".',
+					'mtwdev-custom-attributes',
+				),
+				cleanKey,
+			),
+			cleanKey,
+		};
+	}
+
+	// Check the allow list: anything not explicitly allowed is refused
+	if (!isAllowedAttributeName(cleanKey)) {
+		return {
+			isValid: false,
+			error: sprintf(
+				/* translators: %s: Attribute name */
+				__(
+					'The attribute "%s" is disallowed for security reasons.',
+					'mtwdev-custom-attributes',
+				),
+				cleanKey,
+			),
+			cleanKey,
+		};
+	}
+
+	// Check duplicates
+	if (currentAttributes.some((attr) => attr.key === cleanKey)) {		return {
 			isValid: false,
 			error: sprintf(
 				/* translators: %s: Attribute name */

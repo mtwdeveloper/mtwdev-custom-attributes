@@ -52,7 +52,7 @@ assert_equals('aria-label', sanitize_attribute_name('ARIA-LABEL'), 'Normalizes u
 assert_equals('title', sanitize_attribute_name('  title  '), 'Trims whitespace');
 assert_equals('download', sanitize_attribute_name('download'), 'Accepts standard HTML5 attribute');
 assert_equals('data-id-123', sanitize_attribute_name('data-id-123'), 'Accepts numbers and hyphens');
-assert_equals('custom_attr', sanitize_attribute_name('custom_attr'), 'Accepts underscores');
+assert_equals('data-foo_bar', sanitize_attribute_name('data-foo_bar'), 'Accepts underscores');
 assert_equals('xml:lang', sanitize_attribute_name('xml:lang'), 'Accepts colon namespace');
 
 // Invalid characters
@@ -78,6 +78,27 @@ assert_equals('', sanitize_attribute_name('formaction'), 'Rejects disallowed "fo
 assert_equals('', sanitize_attribute_name('action'), 'Rejects disallowed "action"');
 assert_equals('', sanitize_attribute_name('xmlns'), 'Rejects disallowed "xmlns"');
 assert_equals('', sanitize_attribute_name('xlink:href'), 'Rejects disallowed "xlink:href"');
+
+// Allow list: valid names and prefixes pass
+assert_equals('data-track-event', sanitize_attribute_name('data-track-event'), 'Accepts data-* prefix');
+assert_equals('aria-describedby', sanitize_attribute_name('aria-describedby'), 'Accepts aria-* prefix');
+assert_equals('role', sanitize_attribute_name('role'), 'Accepts role');
+assert_equals('tabindex', sanitize_attribute_name('tabindex'), 'Accepts tabindex');
+assert_equals('lang', sanitize_attribute_name('lang'), 'Accepts lang');
+assert_equals('dir', sanitize_attribute_name('dir'), 'Accepts dir');
+assert_equals('inert', sanitize_attribute_name('inert'), 'Accepts inert');
+assert_equals('hidden', sanitize_attribute_name('hidden'), 'Accepts hidden');
+assert_equals('rel', sanitize_attribute_name('rel'), 'Accepts rel');
+assert_equals('target', sanitize_attribute_name('target'), 'Accepts target');
+assert_equals('xml:lang', sanitize_attribute_name('xml:lang'), 'Accepts xml:lang');
+
+// Allow list: names outside it are refused
+assert_equals('', sanitize_attribute_name('xmlns:xlink'), 'Rejects xmlns:xlink (namespace)');
+assert_equals('', sanitize_attribute_name('href'), 'Rejects href (not on allow list)');
+assert_equals('', sanitize_attribute_name('src'), 'Rejects src (not on allow list)');
+assert_equals('', sanitize_attribute_name('col'), 'Rejects unknown attribute names');
+assert_equals('', sanitize_attribute_name('data-'), 'Rejects a bare "data-" prefix');
+assert_equals('', sanitize_attribute_name('aria-'), 'Rejects a bare "aria-" prefix');
 
 // -------------------------------------------------------------
 // Suite 2: is_safe_attribute_value()
@@ -213,28 +234,66 @@ assert_equals(
 );
 
 // -------------------------------------------------------------
-// Suite 6: pre_kses filter (Security Hardening)
+// Suite 6: content_save_pre filter (Security Hardening)
 // -------------------------------------------------------------
-echo "\nSuite 6: pre_kses filter\n";
+echo "\nSuite 6: content_save_pre filter\n";
 
-global $wp_test_current_user_caps;
+global $wp_test_current_user_caps, $wp_test_is_user_logged_in;
 
-// When user has capability (e.g. unfiltered_html)
+$content_with_attrs = '<!-- wp:paragraph {"align":"left","customAttributes":[{"key":"data-id","value":"1","isBoolean":false}]} --><p>Text</p><!-- /wp:paragraph -->';
+
+// User with the capability: content untouched
+$wp_test_is_user_logged_in = true;
 $wp_test_current_user_caps = ['unfiltered_html' => true];
-$content_with_attrs = '<!-- wp:paragraph {"customAttributes":[{"key":"data-id","value":"1"}]} --><p>Text</p><!-- /wp:paragraph -->';
-$filtered_authorized = \apply_filters('pre_kses', $content_with_attrs);
+// 'content_save_pre' receives and returns slashed data, like core's own kses filters.
 assert_equals(
 	$content_with_attrs,
-	$filtered_authorized,
+	\wp_unslash(\apply_filters('content_save_pre', \wp_slash($content_with_attrs))),
 	'Preserves customAttributes when user has unfiltered_html capability'
 );
 
-// When user lacks capability
+// User without the capability: attributes stripped, rest of the block intact
 $wp_test_current_user_caps = ['unfiltered_html' => false];
-$filtered_unauthorized = \apply_filters('pre_kses', $content_with_attrs);
-assert_true(
-	\strpos($filtered_unauthorized, '"customAttributes":[]') !== false,
-	'Safely strips customAttributes array when user lacks capability'
+$filtered                   = \wp_unslash(\apply_filters('content_save_pre', \wp_slash($content_with_attrs)));
+$parsed_filtered            = \parse_blocks($filtered);
+
+assert_false(
+	\strpos($filtered, 'customAttributes') !== false,
+	'Strips customAttributes when user lacks capability'
+);
+assert_equals('left', $parsed_filtered[0]['attrs']['align'] ?? null, 'Keeps other block attributes intact');
+assert_equals('<p>Text</p>', $parsed_filtered[0]['innerHTML'] ?? null, 'Keeps block markup intact');
+
+// Regression: a value containing "\]" used to corrupt the JSON (old pre_kses regex)
+$content_brackets = '<!-- wp:paragraph {"customAttributes":[{"key":"data-cfg","value":"[1,2]","isBoolean":false},{"key":"title","value":"x","isBoolean":false}]} --><p>x</p><!-- /wp:paragraph -->';
+$filtered_brackets = \wp_unslash(\apply_filters('content_save_pre', \wp_slash($content_brackets)));
+$parsed_brackets   = \parse_blocks($filtered_brackets);
+
+assert_true(\is_array($parsed_brackets[0]['attrs'] ?? null), 'Keeps block JSON valid when a value contains "]"');
+assert_false(\strpos($filtered_brackets, 'isBoolean') !== false, 'Strips every entry, leaving no orphan JSON fragments');
+
+// Inner blocks are sanitized as well
+$content_nested = '<!-- wp:group {"customAttributes":[{"key":"data-x","value":"1","isBoolean":false}]} --><div class="wp-block-group"><!-- wp:paragraph {"customAttributes":[{"key":"data-y","value":"2","isBoolean":false}]} --><p>z</p><!-- /wp:paragraph --></div><!-- /wp:group -->';
+$filtered_nested = \wp_unslash(\apply_filters('content_save_pre', \wp_slash($content_nested)));
+assert_false(
+	\strpos($filtered_nested, 'customAttributes') !== false,
+	'Strips customAttributes in nested inner blocks'
+);
+
+// Programmatic saves without a logged-in user (WP-CLI, imports, cron)
+$wp_test_is_user_logged_in = false;
+assert_equals(
+	$content_with_attrs,
+	\wp_unslash(\apply_filters('content_save_pre', \wp_slash($content_with_attrs))),
+	'Leaves programmatic saves without a logged-in user untouched'
+);
+$wp_test_is_user_logged_in = true;
+
+// Content without block markup short-circuits
+assert_equals(
+	'<p>Hello</p>',
+	\apply_filters('content_save_pre', '<p>Hello</p>'),
+	'Bails early on content without block markup'
 );
 
 // -------------------------------------------------------------

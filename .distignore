@@ -1,0 +1,13 @@
+# Contenido excluido del paquete de distribución.
+# Réplica de las reglas export-ignore de .gitattributes, para herramientas que
+# no leen .gitattributes (10up/action-wordpress-plugin-deploy, wp dist-archive).
+.gitattributes
+.gitignore
+.distignore
+.github
+.vscode
+node_modules
+tests
+pnpm-lock.yaml
+pnpm-workspace.yaml
+*.md

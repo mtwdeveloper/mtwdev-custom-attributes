@@ -1,19 +1,19 @@
 <?php
 /**
- * Plugin Name:       Custom Block Attributes
- * Plugin URI:        https://github.com/mtwdeveloper/mtwdev-custom-attributes
- * Description:       Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block with active security, quick presets, and native rendering.
- * Version:           1.1.0
+ * Plugin Name: mtwdev Custom HTML Attributes for Blocks
+ * Plugin URI: https://github.com/mtwdeveloper/mtwdev-custom-attributes
+ * Description: Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs) to any Gutenberg block with active security, quick presets, and native rendering.
+ * Version: 1.1.1
  * Requires at least: 6.6
- * Requires PHP:      7.4
- * Author:            Marco Torres Walker (mtwdev)
- * Author URI:        https://mtwdev.com/
- * License:           GPL-2.0-or-later
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       mtwdev-custom-attributes
- * Domain Path:       /languages
+ * Requires PHP: 7.4
+ * Author: Marco Torres Walker (mtwdev)
+ * Author URI: https://mtwdev.com/
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: mtwdev-custom-html-attributes-for-blocks
+ * Domain Path: /languages
  *
- * @package           MTWDev\CustomAttributes
+ * @package  MTWDev\CustomAttributes
  */
 
 namespace MTWDev\CustomAttributes;
@@ -23,7 +23,7 @@ namespace MTWDev\CustomAttributes;
 \defined('ABSPATH') || exit;
 
 // Plugin constants.
-\define('MTWDEV_CUSTOM_ATTRIBUTES_VERSION', '1.1.0');
+\define('MTWDEV_CUSTOM_ATTRIBUTES_VERSION', '1.1.1');
 \define('MTWDEV_CUSTOM_ATTRIBUTES_DIR', \plugin_dir_path(__FILE__));
 \define('MTWDEV_CUSTOM_ATTRIBUTES_URL', \plugin_dir_url(__FILE__));
 \define('MTWDEV_CUSTOM_ATTRIBUTES_BASENAME', \plugin_basename(__FILE__));

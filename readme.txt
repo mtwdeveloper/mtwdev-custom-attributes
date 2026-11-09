@@ -1,10 +1,10 @@
-=== Custom Block Attributes ===
+=== mtwdev Custom HTML Attributes for Blocks ===
 Contributors: mtwdev
 Tags: gutenberg, attributes, data-attributes, accessibility, html
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Easily add custom HTML attributes (data-*, aria-*, boolean, and key-value pairs)
 
 == Description ==
 
-**Custom Block Attributes** is a lightweight extension for the WordPress Block Editor (Gutenberg) that allows site editors and developers to inject standard and custom HTML attributes into any supported block.
+**Custom HTML Attributes for Blocks** is a lightweight extension for the WordPress Block Editor (Gutenberg) that allows site editors and developers to inject standard and custom HTML attributes into any supported block.
 
 Whether you need to add custom attributes for analytics tracking (`data-track-event="click"`), improve accessibility (`aria-label`, `aria-describedby`, `role`), or use modern HTML5 boolean attributes (`download`, `inert`), this plugin provides an intuitive, high-performance interface directly within the native Gutenberg **Advanced** panel.
 

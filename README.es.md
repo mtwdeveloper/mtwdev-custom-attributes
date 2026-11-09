@@ -1,14 +1,14 @@
-# Custom Block Attributes
+# Custom HTML Attributes for Blocks
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.6%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![Licencia: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![Tests](https://img.shields.io/badge/Tests-Superados%20(88%2F88)-brightgreen.svg)](#-tests-automatizados)
+[![Tests](<https://img.shields.io/badge/Tests-Superados%20(88%2F88)-brightgreen.svg>)](#-tests-automatizados)
 [![Versión](https://img.shields.io/badge/Versi%C3%B3n-1.1.0-informational.svg)](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases)
 
-*Leer en otros idiomas:* [English](README.md) | [Español](README.es.md)
+_Leer en otros idiomas:_ [English](README.md) | [Español](README.es.md)
 
-**Custom Block Attributes** es un plugin para WordPress ligero, seguro y optimizado para desarrolladores que permite a editores de contenido y desarrolladores inyectar atributos HTML personalizados (`data-*`, `aria-*`, `title`, atributos booleanos como `download` o `inert`, y pares clave-valor) en **cualquier bloque de Gutenberg** directamente desde el editor de bloques.
+**Custom HTML Attributes for Blocks** es un plugin para WordPress ligero, seguro y optimizado para desarrolladores que permite a editores de contenido y desarrolladores inyectar atributos HTML personalizados (`data-*`, `aria-*`, `title`, atributos booleanos como `download` o `inert`, y pares clave-valor) en **cualquier bloque de Gutenberg** directamente desde el editor de bloques.
 
 ---
 
@@ -29,7 +29,7 @@
 - **Cero Impacto en el Rendimiento del Frontend ($O(1)$):**
   - Cero CSS o JS encolado en el frontend.
   - Inyección dinámica y ultrarrápida al renderizar con `WP_HTML_Tag_Processor` nativo de WordPress 6.2+.
-- **Cero Invalidación de Bloques:** Los atributos se guardan en metadatos del bloque. Si se desactiva el plugin, los bloques nunca arrojarán errores de validación de Gutenberg (*"Este bloque contiene contenido inesperado o no válido"*).
+- **Cero Invalidación de Bloques:** Los atributos se guardan en metadatos del bloque. Si se desactiva el plugin, los bloques nunca arrojarán errores de validación de Gutenberg (_"Este bloque contiene contenido inesperado o no válido"_).
 - **Preparado para traducir (i18n):** Cadenas base en inglés, plantilla en `languages/` y traducciones de la comunidad servidas como language packs desde translate.wordpress.org. Sin archivos `.po`/`.mo`/`.json` empaquetados.
 - **Suite de Pruebas Automatizadas:** Tests PHP y JavaScript de validación, sanitización, vectores de seguridad, refuerzo al guardar y renderizado.
 - **Extensible para Desarrolladores:** Filtros PHP para personalizar permisos (`mtwdev_custom_attributes_capability`), la lista blanca de atributos (`mtwdev_custom_attributes_allowed`), la lista negra adicional (`mtwdev_custom_attributes_disallowed`) y bloques incompatibles (`mtwdev_custom_attributes_unsupported_blocks`).
@@ -47,12 +47,14 @@
 ## 📦 Instalación
 
 ### Método 1: Descarga Directa (ZIP)
+
 1. Descarga el archivo `.zip` más reciente desde [Releases](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases).
 2. En tu panel de administración de WordPress, dirígete a **Plugins > Añadir nuevo > Subir plugin**.
 3. Selecciona el archivo ZIP y pulsa **Instalar ahora**.
 4. Pulsa **Activar plugin**.
 
 ### Método 2: Git Clone (Desarrolladores)
+
 1. Clona el repositorio en la carpeta de plugins:
    ```bash
    cd wp-content/plugins/
@@ -126,6 +128,7 @@ Si añades o cambias cualquier cadena visible, ejecuta ese comando y haz commit 
 ## 🔌 API de Desarrolladores y Filtros
 
 ### Personalizar la Capacidad Requerida
+
 ```php
 add_filter('mtwdev_custom_attributes_capability', function (string $cap): string {
     // Permitir a cualquier usuario con permisos de edición de entradas
@@ -146,6 +149,7 @@ add_filter('mtwdev_custom_attributes_allowed', function (array $allowed): array 
 ```
 
 ### Personalizar Atributos Prohibidos
+
 ```php
 add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): array {
     $disallowed[] = 'custom-restricted-attr';
@@ -154,6 +158,7 @@ add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): 
 ```
 
 ### Personalizar Bloques Incompatibles
+
 ```php
 add_filter('mtwdev_custom_attributes_unsupported_blocks', function (array $blocks): array {
     $blocks[] = 'mi-plugin/bloque-no-soportado';

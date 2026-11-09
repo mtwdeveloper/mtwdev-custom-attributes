@@ -1,8 +1,8 @@
-# Guía de Contribución a Custom Block Attributes
+# Guía de Contribución a Custom HTML Attributes for Blocks
 
 _Leer en otros idiomas:_ [English](CONTRIBUTING.md) | [Español](CONTRIBUTING.es.md)
 
-¡Gracias por tu interés en contribuir a **Custom Block Attributes**! Este proyecto es de código abierto y agradecemos enormemente las sugerencias, reportes de errores y aportaciones de código de la comunidad.
+¡Gracias por tu interés en contribuir a **Custom HTML Attributes for Blocks**! Este proyecto es de código abierto y agradecemos enormemente las sugerencias, reportes de errores y aportaciones de código de la comunidad.
 
 Para asegurar un desarrollo ordenado, consistente y de alta calidad, te pedimos que leas y sigas las siguientes directrices antes de colaborar.
 

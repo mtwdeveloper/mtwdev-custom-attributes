@@ -1,6 +1,6 @@
 <?php
 /**
- * Test Runner for MTWDev Custom Block Attributes.
+ * Test Runner for mtwdev Custom HTML Attributes for Blocks.
  */
 
 require_once __DIR__ . '/bootstrap.php';

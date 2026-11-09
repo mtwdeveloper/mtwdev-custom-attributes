@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP Test Bootstrap for MTWDev Custom Block Attributes.
+ * PHP Test Bootstrap for MTWDev Custom HTML Attributes for Blocks.
  *
  * All WordPress mock functions must live in the global namespace.
  */

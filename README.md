@@ -1,14 +1,14 @@
-# Custom Block Attributes
+# Custom HTML Attributes for Blocks
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.6%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![Tests](https://img.shields.io/badge/Tests-Passing%20(88%2F88)-brightgreen.svg)](#-automated-testing)
+[![Tests](<https://img.shields.io/badge/Tests-Passing%20(88%2F88)-brightgreen.svg>)](#-automated-testing)
 [![Version](https://img.shields.io/badge/Version-1.1.0-informational.svg)](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases)
 
-*Read this in other languages:* [English](README.md) | [Español](README.es.md)
+_Read this in other languages:_ [English](README.md) | [Español](README.es.md)
 
-**Custom Block Attributes** is a lightweight, secure, and developer-friendly WordPress plugin that lets site editors and developers inject custom HTML attributes (`data-*`, `aria-*`, `title`, boolean attributes like `download` or `inert`, and custom key-value pairs) into **any Gutenberg block** directly from the block editor.
+**Custom HTML Attributes for Blocks** is a lightweight, secure, and developer-friendly WordPress plugin that lets site editors and developers inject custom HTML attributes (`data-*`, `aria-*`, `title`, boolean attributes like `download` or `inert`, and custom key-value pairs) into **any Gutenberg block** directly from the block editor.
 
 ---
 
@@ -29,7 +29,7 @@
 - **Zero Frontend Overhead ($O(1)$):**
   - Zero additional CSS or JS files enqueued on the frontend.
   - Ultra-fast injection at runtime using native WordPress `WP_HTML_Tag_Processor` with early bailouts.
-- **Zero Block Invalidation:** Attributes are stored in block metadata and injected dynamically at render time (`render_block`). If the plugin is deactivated, blocks will never throw Gutenberg invalidation errors (*"This block contains unexpected or invalid content"*).
+- **Zero Block Invalidation:** Attributes are stored in block metadata and injected dynamically at render time (`render_block`). If the plugin is deactivated, blocks will never throw Gutenberg invalidation errors (_"This block contains unexpected or invalid content"_).
 - **Translation Ready (i18n):** English source strings, a `languages/` template and community translations served as language packs from translate.wordpress.org. No bundled `.po`/`.mo`/`.json` files.
 - **Automated Testing Suite:** PHP and JavaScript tests covering sanitization, rendering, security protocols, the save-time enforcement and editor validation.
 - **Developer Friendly & Extensible:** PHP filters for capability customization (`mtwdev_custom_attributes_capability`), the attribute allow list (`mtwdev_custom_attributes_allowed`), the extra deny list (`mtwdev_custom_attributes_disallowed`), and unsupported blocks (`mtwdev_custom_attributes_unsupported_blocks`).
@@ -47,12 +47,14 @@
 ## 📦 Installation
 
 ### Method 1: Direct Download (ZIP)
+
 1. Download the latest `.zip` from [Releases](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases) or click **Code > Download ZIP**.
 2. In your WordPress admin dashboard, navigate to **Plugins > Add New > Upload Plugin**.
 3. Choose the downloaded ZIP file and click **Install Now**.
 4. Click **Activate Plugin**.
 
 ### Method 2: Git Clone (Developers)
+
 1. Clone the repository into your WordPress plugins directory:
    ```bash
    cd wp-content/plugins/
@@ -64,7 +66,7 @@
    pnpm install
    pnpm run build
    ```
-3. Activate **Custom Block Attributes** in **Plugins > Installed Plugins** (or run `wp plugin activate mtwdev-custom-attributes`).
+3. Activate **Custom HTML Attributes for Blocks** in **Plugins > Installed Plugins** (or run `wp plugin activate mtwdev-custom-attributes`).
 
 ---
 
@@ -126,6 +128,7 @@ When you add or change any user-facing string, run that command and commit the u
 ## 🔌 Developer API & Filters
 
 ### Customizing the Required Capability
+
 ```php
 add_filter('mtwdev_custom_attributes_capability', function (string $cap): string {
     // Allow any user who can edit posts
@@ -146,6 +149,7 @@ add_filter('mtwdev_custom_attributes_allowed', function (array $allowed): array 
 ```
 
 ### Customizing Disallowed Attributes
+
 ```php
 add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): array {
     $disallowed[] = 'custom-restricted-attr';
@@ -154,6 +158,7 @@ add_filter('mtwdev_custom_attributes_disallowed', function (array $disallowed): 
 ```
 
 ### Customizing Unsupported Blocks
+
 ```php
 add_filter('mtwdev_custom_attributes_unsupported_blocks', function (array $blocks): array {
     $blocks[] = 'my-custom-plugin/unsupported-block';

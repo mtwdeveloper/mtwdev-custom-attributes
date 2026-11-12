@@ -86,7 +86,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
   if (!cleanKey) {
     return {
       isValid: false,
-      error: __('Please enter an attribute name.', 'mtwdev-custom-attributes'),
+      error: __('Please enter an attribute name.', 'mtwdev-custom-html-attributes-for-blocks'),
       cleanKey: '',
     }
   }
@@ -97,7 +97,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
       isValid: false,
       error: __(
         'Invalid characters. Use only lowercase letters, numbers, hyphens, colons, or underscores.',
-        'mtwdev-custom-attributes',
+        'mtwdev-custom-html-attributes-for-blocks',
       ),
       cleanKey,
     }
@@ -109,7 +109,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
       isValid: false,
       error: __(
         'For security reasons, "on*" event attributes are not allowed.',
-        'mtwdev-custom-attributes',
+        'mtwdev-custom-html-attributes-for-blocks',
       ),
       cleanKey,
     }
@@ -123,7 +123,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
         /* translators: %s: Attribute name */
         __(
           'The attribute "%s" is already natively managed by WordPress.',
-          'mtwdev-custom-attributes',
+          'mtwdev-custom-html-attributes-for-blocks',
         ),
         cleanKey,
       ),
@@ -137,7 +137,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
       isValid: false,
       error: sprintf(
         /* translators: %s: Attribute name */
-        __('The attribute "%s" is disallowed for security reasons.', 'mtwdev-custom-attributes'),
+        __('The attribute "%s" is disallowed for security reasons.', 'mtwdev-custom-html-attributes-for-blocks'),
         cleanKey,
       ),
       cleanKey,
@@ -152,7 +152,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
         /* translators: %s: Attribute prefix, e.g. "data-" */
         __(
           'Incomplete attribute: "%s" is only a prefix. Add a name after it, e.g. "data-track".',
-          'mtwdev-custom-attributes',
+          'mtwdev-custom-html-attributes-for-blocks',
         ),
         cleanKey,
       ),
@@ -166,7 +166,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
       isValid: false,
       error: sprintf(
         /* translators: %s: Attribute name */
-        __('The attribute "%s" is disallowed for security reasons.', 'mtwdev-custom-attributes'),
+        __('The attribute "%s" is disallowed for security reasons.', 'mtwdev-custom-html-attributes-for-blocks'),
         cleanKey,
       ),
       cleanKey,
@@ -179,7 +179,7 @@ export function validateNewAttribute(key, currentAttributes = []) {
       isValid: false,
       error: sprintf(
         /* translators: %s: Attribute name */
-        __('The attribute "%s" is already added to this block.', 'mtwdev-custom-attributes'),
+        __('The attribute "%s" is already added to this block.', 'mtwdev-custom-html-attributes-for-blocks'),
         cleanKey,
       ),
       cleanKey,

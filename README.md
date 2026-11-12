@@ -4,7 +4,7 @@
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![Tests](<https://img.shields.io/badge/Tests-Passing%20(88%2F88)-brightgreen.svg>)](#-automated-testing)
-[![Version](https://img.shields.io/badge/Version-1.1.0-informational.svg)](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases)
+[![Version](https://img.shields.io/badge/Version-1.1.2-informational.svg)](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases)
 
 _Read this in other languages:_ [English](README.md) | [Español](README.es.md)
 
@@ -94,7 +94,7 @@ All 88 tests (11 JS tests + 77 PHP tests) run isolated and test sanitization, va
 The plugin ships no compiled translations: every locale is served as a language pack from [translate.wordpress.org](https://translate.wordpress.org/). Only the template is generated locally:
 
 ```bash
-# Refresh languages/mtwdev-custom-attributes.pot (PHP + JS strings)
+# Refresh languages/mtwdev-custom-html-attributes-for-blocks.pot (PHP + JS strings)
 pnpm run i18n:pot
 ```
 

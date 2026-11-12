@@ -142,17 +142,17 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
           <InspectorControls group='advanced'>
             <div className='mtwdev-custom-attributes-wrapper'>
               <BaseControl
-                label={__('Custom HTML Attributes', 'mtwdev-custom-attributes')}
+                label={__('Custom HTML Attributes', 'mtwdev-custom-html-attributes-for-blocks')}
                 help={__(
                   'Add custom HTML attributes (data-*, aria-*, download, etc.) directly to the opening tag of this block.',
-                  'mtwdev-custom-attributes',
+                  'mtwdev-custom-html-attributes-for-blocks',
                 )}
               >
                 {!canUserUse && (
                   <Notice status='warning' isDismissible={false} style={{ marginBottom: '12px' }}>
                     {__(
                       'Your user role does not have sufficient permissions to add or edit custom HTML attributes.',
-                      'mtwdev-custom-attributes',
+                      'mtwdev-custom-html-attributes-for-blocks',
                     )}
                   </Notice>
                 )}
@@ -168,7 +168,7 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
                       onClick={() => handleApplyPreset(preset)}
                       title={sprintf(
                         /* translators: %s: Preset label */
-                        __('Use preset %s', 'mtwdev-custom-attributes'),
+                        __('Use preset %s', 'mtwdev-custom-html-attributes-for-blocks'),
                         preset.label,
                       )}
                     >
@@ -180,7 +180,7 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
                 {/* Add Attribute Input Row */}
                 <div className='mtwdev-custom-attributes-add-row'>
                   <TextControl
-                    placeholder={__('e.g. title, data-track...', 'mtwdev-custom-attributes')}
+                    placeholder={__('e.g. title, data-track...', 'mtwdev-custom-html-attributes-for-blocks')}
                     value={newKey}
                     disabled={!canUserUse}
                     onChange={(val) => {
@@ -189,7 +189,7 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
                     }}
                   />
                   <Button isPrimary onClick={handleAddAttribute} disabled={!canUserUse}>
-                    {__('Add', 'mtwdev-custom-attributes')}
+                    {__('Add', 'mtwdev-custom-html-attributes-for-blocks')}
                   </Button>
                 </div>
 
@@ -201,13 +201,13 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
                 )}
 
                 <ToggleControl
-                  label={__('Boolean / empty attribute (no value)', 'mtwdev-custom-attributes')}
+                  label={__('Boolean / empty attribute (no value)', 'mtwdev-custom-html-attributes-for-blocks')}
                   checked={isSimple}
                   disabled={!canUserUse}
                   onChange={(val) => setIsSimple(val)}
                   help={__(
                     'For attributes that do not require a value, such as download, inert, etc.',
-                    'mtwdev-custom-attributes',
+                    'mtwdev-custom-html-attributes-for-blocks',
                   )}
                 />
 
@@ -223,7 +223,7 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
                             isSmall
                             disabled={!canUserUse}
                             onClick={() => handleRemoveAttribute(index)}
-                            title={__('Remove attribute', 'mtwdev-custom-attributes')}
+                            title={__('Remove attribute', 'mtwdev-custom-html-attributes-for-blocks')}
                           >
                             ✕
                           </Button>
@@ -233,7 +233,7 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
                           <TextControl
                             label={sprintf(
                               /* translators: %s: Attribute key */
-                              __('Value for %s', 'mtwdev-custom-attributes'),
+                              __('Value for %s', 'mtwdev-custom-html-attributes-for-blocks'),
                               attr.key,
                             )}
                             value={attr.value || ''}
@@ -244,13 +244,13 @@ const withCustomAttributesControls = createHigherOrderComponent((BlockEdit) => {
                           <div className='mtwdev-boolean-hint'>
                             {__(
                               'Boolean attribute (rendered without a value)',
-                              'mtwdev-custom-attributes',
+                              'mtwdev-custom-html-attributes-for-blocks',
                             )}
                           </div>
                         )}
 
                         <ToggleControl
-                          label={__('Boolean attribute (no value)', 'mtwdev-custom-attributes')}
+                          label={__('Boolean attribute (no value)', 'mtwdev-custom-html-attributes-for-blocks')}
                           checked={!!attr.isBoolean}
                           disabled={!canUserUse}
                           onChange={(val) => handleToggleBoolean(index, val)}

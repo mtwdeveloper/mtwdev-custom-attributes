@@ -212,4 +212,4 @@ if (!\function_exists('wp_json_encode')) {
 require_once ABSPATH . 'wp-includes/blocks.php';
 
 // Load plugin main file
-require_once \dirname(__DIR__) . '/mtwdev-custom-attributes.php';
+require_once \dirname(__DIR__) . '/mtwdev-custom-html-attributes-for-blocks.php';

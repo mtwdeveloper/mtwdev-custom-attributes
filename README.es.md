@@ -4,7 +4,7 @@
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![Licencia: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![Tests](<https://img.shields.io/badge/Tests-Superados%20(88%2F88)-brightgreen.svg>)](#-tests-automatizados)
-[![Versión](https://img.shields.io/badge/Versi%C3%B3n-1.1.0-informational.svg)](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases)
+[![Versión](https://img.shields.io/badge/Versi%C3%B3n-1.1.2-informational.svg)](https://github.com/mtwdeveloper/mtwdev-custom-attributes/releases)
 
 _Leer en otros idiomas:_ [English](README.md) | [Español](README.es.md)
 
@@ -94,7 +94,7 @@ Los 88 tests (11 de JS y 77 de PHP) se ejecutan de forma aislada y verifican san
 El plugin no incluye traducciones compiladas: cada idioma se sirve como language pack desde [translate.wordpress.org](https://translate.wordpress.org/). En local solo se genera la plantilla:
 
 ```bash
-# Regenerar languages/mtwdev-custom-attributes.pot (cadenas PHP + JS)
+# Regenerar languages/mtwdev-custom-html-attributes-for-blocks.pot (cadenas PHP + JS)
 pnpm run i18n:pot
 ```
 

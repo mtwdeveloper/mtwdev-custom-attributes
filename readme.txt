@@ -4,7 +4,7 @@ Tags: gutenberg, attributes, data-attributes, accessibility, html
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,7 +45,7 @@ The plugin ships with its compiled assets (`build/`). The human-readable source 
 
 == Installation ==
 
-1. Upload the `mtwdev-custom-attributes` directory to your `/wp-content/plugins/` directory, or install directly through the WordPress plugin installer.
+1. Upload the `mtwdev-custom-html-attributes-for-blocks` directory to your `/wp-content/plugins/` directory, or install directly through the WordPress plugin installer.
 2. Activate the plugin via the **Plugins** menu in WordPress.
 3. Edit any post, page, or template in the Block Editor, select a block, and expand the **Advanced** panel in the right sidebar to configure your attributes.
 
@@ -84,6 +84,13 @@ The source strings are English. Translations are handled by the WordPress.org tr
 3. The rendered front-end markup with the attributes injected into the block's opening tag.
 
 == Changelog ==
+
+= 1.1.2 =
+* Fix: Unified text domain across JavaScript and PHP to match the plugin slug for GlotPress language packs compatibility.
+* i18n: Added Spanish translation support and refreshed the translation template.
+
+= 1.1.1 =
+* Name and slug changed to mtwdev-custom-html-attributes-for-blocks.
 
 = 1.1.0 =
 * Security: attribute validation is now an allow list instead of a deny list; `xmlns:*`, `xlink:*`, `href`, `src` and unknown names no longer reach the markup.

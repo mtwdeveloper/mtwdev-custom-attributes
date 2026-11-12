@@ -70,7 +70,7 @@ To ensure project stability and maintainability, all contributions must follow t
 - Write modern standard **React / JSX**.
 - Use official WordPress packages (`@wordpress/block-editor`, `@wordpress/components`, `@wordpress/compose`, `@wordpress/element`, `@wordpress/hooks`, `@wordpress/i18n`).
 - **Do not** manually call `wp.element.createElement` in source files under `src/`.
-- Wrap all UI strings in internationalization functions: `__('...', 'mtwdev-custom-attributes')`.
+- Wrap all UI strings in internationalization functions: `__('...', 'mtwdev-custom-html-attributes-for-blocks')`.
 
 ---
 
@@ -78,7 +78,7 @@ To ensure project stability and maintainability, all contributions must follow t
 
 The plugin ships **no compiled translations**. Source strings are English and every locale is served as a language pack that WordPress.org builds from the community translations.
 
-1. Every user-facing string must use the plugin text domain: `__('...', 'mtwdev-custom-attributes')` in PHP and JavaScript.
+1. Every user-facing string must use the plugin text domain: `__('...', 'mtwdev-custom-html-attributes-for-blocks')` in PHP and JavaScript.
 2. When you add or change a string, regenerate the template and commit it:
    ```bash
    pnpm run i18n:pot
@@ -92,13 +92,13 @@ The plugin ships **no compiled translations**. Source strings are English and ev
 
 WordPress.org does not build anything, so `build/` must be committed and shipped.
 
-1. Bump the version in `mtwdev-custom-attributes.php` (header and `MTWDEV_CUSTOM_ATTRIBUTES_VERSION`), `readme.txt` (`Stable tag`) and `package.json`.
+1. Bump the version in `mtwdev-custom-html-attributes-for-blocks.php` (header and `MTWDEV_CUSTOM_ATTRIBUTES_VERSION`), `readme.txt` (`Stable tag`) and `package.json`.
 2. Add a `= x.y.z =` entry to the `== Changelog ==` section of `readme.txt`.
 3. Run `pnpm run build` and `pnpm test`.
 4. Run Plugin Check (Tools → Plugin Check) with **all** categories, Accessibility included.
 5. Build the distribution package:
    ```bash
-   git archive --worktree-attributes -o mtwdev-custom-attributes.zip HEAD
+   git archive --worktree-attributes -o mtwdev-custom-html-attributes-for-blocks.zip HEAD
    ```
    `.gitattributes` (`export-ignore`) leaves `tests/`, `.git*`, the lockfiles and every root `.md` out of the package. `.distignore` mirrors that list for `10up/action-wordpress-plugin-deploy`, which uses `.distignore` and ignores `.gitattributes`.
 6. Publication pushes to SVN `trunk/` (`build/`, `readme.txt`, `LICENSE`, `languages/`, `src/`) and creates `tags/x.y.z/`. Screenshots, banner and icon go to SVN `/assets/`, never inside the plugin folder.
